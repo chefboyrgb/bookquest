@@ -1,13 +1,15 @@
 import NarniaGame from "./narnia/index.js";
 import DavidGame from "./david/index.js";
 
+const isLocalDevelopment = import.meta.env.DEV;
+
 export const AVAILABLE_GAMES = {
   narnia: {
     id: "narnia",
     title: "The Lion, the Witch and the Wardrobe",
     author: "C.S. Lewis",
     emoji: "🦁",
-    enabled: false,
+    enabled: isLocalDevelopment,
     content: NarniaGame,
   },
   david: {

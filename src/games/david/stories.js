@@ -64,6 +64,14 @@ export const storyNodes = {
       { text: "Ask about the Philistine threat", next: "philistines_gather" },
       { text: "Continue playing", next: "philistines_gather" }
     ],
+    itemInteractions: [
+      {
+        itemId: "harp",
+        text: "Play a calming song for King Saul",
+        next: "philistines_gather",
+        successText: "Your harp calms Saul's spirit, and he trusts your counsel."
+      }
+    ],
     art: "🏰",
     itemsGained: ["harp"]
   },
@@ -135,10 +143,12 @@ export const storyNodes = {
       "You walk into the valley. Goliath sees you—a shepherd boy—and laughs. His armor clanks with each step as he advances. 'Come,' he roars, 'and I will give your flesh to the birds of the air!' But you speak with quiet confidence: 'You come at me with sword and spear, but I come in the name of the Lord.'",
     choices: [
       {
-        text: "Declare your faith",
-        next: "stone_released"
+        text: "Use your sling and stone with faith",
+        next: "stone_released",
+        requiresItems: ["sling", "stone"],
+        successText: "You steady your breath, trust God, and let the stone fly."
       },
-      { text: "Watch his movements", next: "stone_released" }
+      { text: "Retreat and prepare your weapons", next: "choose_weapon" }
     ],
     art: "⚔️"
   },

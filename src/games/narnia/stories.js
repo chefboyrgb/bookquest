@@ -106,6 +106,12 @@ export const storyNodes = {
     narrative:
       "You set out with the Beavers into the forest, searching for Edmund and hoping to reach Aslan's camp before the Witch finds you. The snow crunches under your feet. Behind you, you hear the sound of a sleigh and the crack of a whip. The Witch is hunting you! You run faster, the forest becoming a blur of white and green.",
     choices: [
+      {
+        text: "Use the map to guide everyone through the forest",
+        next: "escape",
+        requiresItem: "map",
+        successText: "Your map reveals a safer path toward the river crossing."
+      },
       { text: "Keep running forward", next: "escape" },
       { text: "Hide and let her pass", next: "hide_witch" },
     ],
@@ -139,6 +145,14 @@ export const storyNodes = {
         text: "Ask about saving Edmund", 
         next: "sacrifice" 
       },
+    ],
+    itemInteractions: [
+      {
+        itemId: "cordial",
+        text: "Share the cordial with wounded allies",
+        next: "battle",
+        successText: "The cordial restores strength in the camp before battle."
+      }
     ],
     art: "🦁✨",
   },

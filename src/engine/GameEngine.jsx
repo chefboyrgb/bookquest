@@ -1,23 +1,73 @@
 // GameEngine — Core game logic and UI
 // Platform-agnostic game renderer. Content is passed as props.
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function GameEngine({ content }) {
   const [currentScene, setCurrentScene] = useState("start");
   const [inventory, setInventory] = useState([]);
   const [score, setScore] = useState(0);
+  const [message, setMessage] = useState("");
+  const awardedScenesRef = useRef(new Set());
 
   // Unpack content modules
-  const { metadata, storyNodes } = content;
+  const { metadata, storyNodes, items = {} } = content;
   const scene = storyNodes[currentScene];
 
-  const handleChoice = (nextScene) => {
-    if (scene.itemsGained) {
-      setInventory([...inventory, ...scene.itemsGained]);
+  useEffect(() => {
+    if (!scene || !scene.itemsGained || awardedScenesRef.current.has(currentScene)) {
+      return;
     }
-    setScore(score + 10);
-    setCurrentScene(nextScene);
+
+    setInventory((prev) => Array.from(new Set([...prev, ...scene.itemsGained])));
+    awardedScenesRef.current.add(currentScene);
+  }, [currentScene, scene]);
+
+  const hasRequiredItems = (requiredItems = []) =>
+    requiredItems.every((itemId) => inventory.includes(itemId));
+
+  const getMissingItems = (requiredItems = []) =>
+    requiredItems.filter((itemId) => !inventory.includes(itemId));
+
+  const getItemLabel = (itemId) => {
+    const item = items[itemId];
+    if (!item) {
+      return itemId;
+    }
+    return `${item.icon ? `${item.icon} ` : ""}${item.name}`;
+  };
+
+  const handleChoice = (choice) => {
+    const requiredItems = choice.requiresItems || (choice.requiresItem ? [choice.requiresItem] : []);
+
+    if (!hasRequiredItems(requiredItems)) {
+      const missingItems = getMissingItems(requiredItems).map(getItemLabel).join(", ");
+      setMessage(choice.lockedText || `You need ${missingItems} to do that.`);
+      return;
+    }
+
+    if (choice.consumesItems?.length) {
+      setInventory((prev) => prev.filter((itemId) => !choice.consumesItems.includes(itemId)));
+    }
+
+    setMessage(choice.successText || "");
+    setScore((prev) => prev + 10);
+    setCurrentScene(choice.next);
+  };
+
+  const handleItemInteraction = (interaction) => {
+    if (!inventory.includes(interaction.itemId)) {
+      setMessage(interaction.lockedText || `You need ${getItemLabel(interaction.itemId)}.`);
+      return;
+    }
+
+    if (interaction.consumeItem) {
+      setInventory((prev) => prev.filter((itemId) => itemId !== interaction.itemId));
+    }
+
+    setMessage(interaction.successText || "");
+    setScore((prev) => prev + 10);
+    setCurrentScene(interaction.next);
   };
 
   if (!scene) {
@@ -40,7 +90,24 @@ export default function GameEngine({ content }) {
 
           {inventory.length > 0 && (
             <div style={styles.inventory}>
-              <strong>📦 Inventory:</strong> {inventory.join(", ")}
+              <strong>📦 Inventory:</strong> {inventory.map(getItemLabel).join(", ")}
+            </div>
+          )}
+
+          {scene.itemInteractions?.length > 0 && (
+            <div style={styles.interactions}>
+              <h4 style={styles.interactionsTitle}>Use an item:</h4>
+              <div style={styles.choices}>
+                {scene.itemInteractions.map((interaction, i) => (
+                  <button
+                    key={`interaction-${i}`}
+                    onClick={() => handleItemInteraction(interaction)}
+                    style={styles.choiceButton}
+                  >
+                    {`${getItemLabel(interaction.itemId)} — ${interaction.text}`} →
+                  </button>
+                ))}
+              </div>
             </div>
           )}
 
@@ -48,13 +115,15 @@ export default function GameEngine({ content }) {
             {scene.choices.map((choice, i) => (
               <button
                 key={i}
-                onClick={() => handleChoice(choice.next)}
+                onClick={() => handleChoice(choice)}
                 style={styles.choiceButton}
               >
                 {choice.text} →
               </button>
             ))}
           </div>
+
+          {message && <p style={styles.message}>{message}</p>}
 
           <div style={styles.footer}>
             <p>Progress: {score} points | Scenes explored: {Math.floor(score / 10) + 1}</p>
@@ -140,6 +209,15 @@ const styles = {
     gap: "12px",
     marginTop: "30px",
   },
+  interactions: {
+    marginTop: "20px",
+  },
+  interactionsTitle: {
+    margin: "0 0 10px",
+    color: "#c9a84c",
+    fontSize: "15px",
+    letterSpacing: "0.5px",
+  },
   choiceButton: {
     padding: "14px 20px",
     background: "rgba(201, 168, 76, 0.15)",
@@ -150,6 +228,15 @@ const styles = {
     cursor: "pointer",
     transition: "all 0.3s",
     fontFamily: "inherit",
+  },
+  message: {
+    marginTop: "16px",
+    color: "#f3d27a",
+    background: "rgba(201, 168, 76, 0.12)",
+    border: "1px solid rgba(201, 168, 76, 0.35)",
+    borderRadius: "8px",
+    padding: "10px 12px",
+    fontSize: "14px",
   },
   footer: {
     marginTop: "20px",
