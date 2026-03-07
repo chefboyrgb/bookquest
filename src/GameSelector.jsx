@@ -237,8 +237,6 @@ const styles = {
   footerIcon: {
     width: "clamp(72px, 20vw, 120px)",
     height: "clamp(72px, 20vw, 120px)",
-    borderRadius: "50%",
-    boxShadow: "0 4px 12px rgba(201, 168, 76, 0.3)",
     transition: "all 0.3s",
     cursor: "pointer",
   },
