@@ -24,7 +24,7 @@ export const AVAILABLE_GAMES = {
   "dragons-lair": {
     id: "dragons-lair",
     title: "The Dragon's Laire",
-    author: "BookQuest Original",
+    author: "Reader's Quest Original",
     emoji: "🐉",
     enabled: true,
     content: DragonsLairGame,
