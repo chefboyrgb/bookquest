@@ -37,8 +37,22 @@ export default function GameSelector() {
     return (
       <div style={styles.container}>
         <div style={styles.header}>
-          <h1 style={styles.title}>📚 Book Quest</h1>
-          <p style={styles.subtitle}>Choose Your Adventure</p>
+          <div style={styles.headerTop}>
+            <div></div>
+            <div>
+              <h1 style={styles.title}>📚 Book Quest</h1>
+              <p style={styles.subtitle}>Choose Your Adventure</p>
+            </div>
+            <a
+              href="https://www.buymeacoffee.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={styles.donateButton}
+              title="Support BookQuest"
+            >
+              ☕ Donate
+            </a>
+          </div>
         </div>
 
         <div style={styles.gameGrid}>
@@ -85,6 +99,27 @@ const styles = {
   header: {
     textAlign: "center",
     marginBottom: "60px",
+  },
+  headerTop: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    maxWidth: "1000px",
+    margin: "0 auto",
+  },
+  donateButton: {
+    padding: "8px 16px",
+    background: "linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)",
+    border: "none",
+    borderRadius: "6px",
+    color: "#1a1a2e",
+    fontSize: "14px",
+    fontWeight: "bold",
+    cursor: "pointer",
+    textDecoration: "none",
+    transition: "all 0.3s",
+    boxShadow: "0 2px 8px rgba(251, 191, 36, 0.3)",
+    whiteSpace: "nowrap",
   },
   title: {
     fontSize: "56px",
