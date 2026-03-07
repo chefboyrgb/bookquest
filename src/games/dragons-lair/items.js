@@ -26,7 +26,7 @@ export const items = {
   },
   murkwood_relic: {
     id: "murkwood_relic",
-    name: "Ancient Shrine Relic",
+    name: "Radiant Pool Relic",
     icon: "✨",
   },
   antique_dagger: {

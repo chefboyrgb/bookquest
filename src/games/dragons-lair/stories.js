@@ -199,7 +199,7 @@ export const storyNodes = {
         next: "laffterland_gates",
         rpgEffects: { gold: 20 },
         successText:
-          "Hilda shares what she knows: 'The trees move when you're not looking. And there are bandits — desperate folk who prey on travelers. But the shrine in the clearing... some say it holds ancient power.'",
+          "Hilda shares what she knows: 'The trees move when you're not looking. And there are bandits — desperate folk who prey on travelers. But the radiant pool in the clearing... some say it holds ancient power.'",
       },
       {
         text: "Demand more payment for your services",
@@ -954,25 +954,25 @@ export const storyNodes = {
   },
 
   // ============================================================
-  // SCENE 19: The Ancient Shrine
+  // SCENE 19: The Radiant Pool
   // ============================================================
   clearing: {
-    title: "The Ancient Shrine",
+    title: "The Radiant Pool",
     chapter: "Chapter 1 — The Murkwood Crossing",
     art: "✨",
     narrative:
-      "Deep in the heart of the Murkwood, you stumble into a clearing bathed in pale silver light. In its center stands an ancient stone shrine, covered in moss and carved with symbols from a language long dead. On the shrine's altar rests a small glowing relic — a crystal sphere pulsing with warm, golden light. The air here is different — clean, peaceful, as if the corruption of the forest cannot touch this place. Your wounds seem to ache less. Even the shadows at the edge of the clearing seem held at bay.",
+      "Deep in the heart of the Murkwood, you stumble into a clearing bathed in pale silver light. In its center lies a radiant pool of still, glowing water — its surface shimmers with golden light that seems to come from somewhere far below. Ancient stones ring the pool's edge, carved with symbols from a language long dead. A small crystal sphere rests on a moss-covered pedestal beside the water, pulsing with warm energy. The air here is different — clean, peaceful, as if the corruption of the forest cannot touch this place. Your wounds seem to ache less. Even the shadows at the edge of the clearing seem held at bay.",
     partyNarrative: {
       grimjaw:
-        "Grimjaw kneels beside the shrine, surprisingly reverent. 'My grandmother told me about places like this. Holy ground. Even the wolves won't cross here.'",
+        "Grimjaw kneels beside the pool, surprisingly reverent. 'My grandmother told me about places like this. Sacred ground. Even the wolves won't cross here.'",
       lyralei:
-        "Lyralei's eyes widen. 'This shrine predates the forest itself. The magic here is pure — older than any spell I've studied. We should treat this place with respect.'",
+        "Lyralei's eyes widen. 'This pool predates the forest itself. The magic here is pure — older than any spell I've studied. We should treat this place with respect.'",
       silas:
         "Silas stands at the edge of the clearing, arms crossed. Something in his expression softens for just a moment before the mask returns. 'Didn't think places like this still existed.'",
     },
     choices: [
       {
-        text: "Take the relic — it may prove useful against the dragon",
+        text: "Take the relic from the pedestal — it may prove useful against the dragon",
         next: "chapter1_end",
         itemsGained: ["murkwood_relic"],
         rpgEffects: { xp: 5 },
@@ -980,22 +980,22 @@ export const storyNodes = {
           "As your fingers close around the relic, warmth floods through you. The crystal pulses once, twice, then dims to a steady glow. It feels right in your hand — like it was waiting for someone worthy.",
       },
       {
-        text: "Kneel and pray at the shrine",
+        text: "Kneel by the pool and reflect on the journey ahead",
         next: "chapter1_end",
         healAmount: 50,
         partyHealAmount: 40,
         bondEffect: { grimjaw: 5, lyralei: 5, silas: 8 },
         moralImpact: 1,
         successText:
-          "You kneel on the cool stone and bow your head. A wave of warmth washes over you and your companions. Wounds close, aches fade, and for a moment you feel a profound peace. Something ancient and good has blessed your quest.",
+          "You kneel at the water's edge and let the stillness wash over you. The pool's light ripples outward, and a wave of warmth flows through you and your companions. Wounds close, aches fade, and for a moment you feel a profound peace. Something ancient and good has blessed your quest.",
       },
       {
-        text: "Study the inscriptions on the shrine",
+        text: "Study the inscriptions on the ancient stones",
         next: "chapter1_end",
         rpgEffects: { xp: 10 },
         statBoost: { cunning: 2 },
         successText:
-          "The symbols reveal themselves slowly to your study. They speak of an age when dragons and humans lived in balance, before Lurch and his kind turned to destruction. The knowledge settles in your mind, sharpening your understanding of the world. This will prove valuable.",
+          "The symbols carved into the stones reveal themselves slowly to your study. They speak of an age when dragons and humans lived in balance, before Lurch and his kind turned to destruction. The knowledge settles in your mind, sharpening your understanding of the world. This will prove valuable.",
       },
     ],
   },
