@@ -4,6 +4,7 @@
 import { useState } from "react";
 import GameEngine from "./engine/GameEngine.jsx";
 import NarniaGame from "./games/narnia/index.js";
+import DavidGame from "./games/david/index.js";
 
 const AVAILABLE_GAMES = {
   narnia: {
@@ -12,6 +13,13 @@ const AVAILABLE_GAMES = {
     author: "C.S. Lewis",
     emoji: "🦁",
     content: NarniaGame,
+  },
+  david: {
+    id: "david",
+    title: "The Life of David",
+    author: "Biblical Text (1 & 2 Samuel)",
+    emoji: "⚔️",
+    content: DavidGame,
   },
   // Add more games here in the future:
   // charlotte: { ... },
