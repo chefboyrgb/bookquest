@@ -23,4 +23,8 @@ export const vocabulary = {
     word: "Murkwood",
     definition: "An ancient dark forest filled with bandits, strange creatures, and forgotten shrines.",
   },
+  jabberwocky: {
+    word: "Jabberwocky",
+    definition: "A monstrous creature that dwells in absolute darkness. It hunts by sound and smell, and its jaws can crush plate armor. Never enter a dark place without a torch.",
+  },
 };

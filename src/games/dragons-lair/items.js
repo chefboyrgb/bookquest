@@ -34,4 +34,9 @@ export const items = {
     name: "Antique Dagger",
     icon: "🗡️",
   },
+  torch: {
+    id: "torch",
+    name: "Torch",
+    icon: "🔥",
+  },
 };

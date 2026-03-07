@@ -345,13 +345,13 @@ export const storyNodes = {
     chapter: "Chapter 1 — The Murkwood Crossing",
     art: "⚔️",
     narrative:
-      "The royal armorer leads you into a vaulted stone chamber lined with weapons and armor. Racks of swords, bows, staves, shields, and curious artifacts fill every wall. 'Choose your loadout carefully,' the armorer says. 'The Murkwood will test you in ways steel alone cannot answer.' Three sets catch your eye, each suited to a different style of combat.",
+      "The royal armorer leads you into a vaulted stone chamber lined with weapons and armor. Racks of swords, bows, staves, shields, and curious artifacts fill every wall. 'Choose your loadout carefully,' the armorer says. 'The Murkwood will test you in ways steel alone cannot answer.' He gestures toward a barrel by the door. 'And take a torch — where you're going, the darkness itself is your enemy.' Three weapon sets catch your eye, each suited to a different style of combat.",
     choices: [
       {
         text: "Take the Sword & Shield — strength and protection",
         next: "tavern",
         statBoost: { attack: 3, defense: 2 },
-        itemsGained: ["sword_shield"],
+        itemsGained: ["sword_shield", "torch"],
         successText:
           "The blade hums as you draw it. Solid steel, well-balanced. The shield bears the crest of Laffter Land.",
       },
@@ -359,7 +359,7 @@ export const storyNodes = {
         text: "Take the Bow & Leather Cloak — speed and precision",
         next: "tavern",
         statBoost: { attack: 2, cunning: 3 },
-        itemsGained: ["bow_cloak"],
+        itemsGained: ["bow_cloak", "torch"],
         successText:
           "The bow is yew, light and deadly. The leather cloak lets you move like a shadow.",
       },
@@ -367,7 +367,7 @@ export const storyNodes = {
         text: "Take the Staff & Scrolls — knowledge and arcane power",
         next: "tavern",
         statBoost: { cunning: 5, defense: 1 },
-        itemsGained: ["staff_scrolls"],
+        itemsGained: ["staff_scrolls", "torch"],
         successText:
           "The staff crackles with dormant energy. The scrolls contain basic wards and enchantments. Wisdom is the sharpest weapon.",
       },
@@ -884,13 +884,13 @@ export const storyNodes = {
           enemyPower: 14,
           description:
             "Five bandits with rusty swords fan out around you. They're desperate and hungry, but poorly trained. Their leader barks orders as they close in.",
-          winNext: "clearing",
+          winNext: "dark_passage",
           winText:
             "The bandits scatter into the trees, leaving their wounded leader crawling in the dirt. Your party emerges victorious, though not unscathed.",
-          loseNext: "clearing",
+          loseNext: "dark_passage",
           loseText:
             "The bandits overwhelm you with numbers. You take a beating before they grab what they want and flee. Bruised but alive.",
-          fleeNext: "clearing",
+          fleeNext: "dark_passage",
           fleeDifficulty: 5,
           goldReward: 20,
           xpReward: 15,
@@ -899,7 +899,7 @@ export const storyNodes = {
       },
       {
         text: "Offer them thirty gold to let you pass",
-        next: "clearing",
+        next: "dark_passage",
         requiresGold: 30,
         rpgEffects: { gold: -30 },
         failText: "You don't have enough gold to bribe them. The bandits close in...",
@@ -908,7 +908,7 @@ export const storyNodes = {
       },
       {
         text: "Try to intimidate them into backing down",
-        next: "clearing",
+        next: "dark_passage",
         requiresAttack: 18,
         failText:
           "The bandit leader laughs. 'You don't scare us, hero. There are five of us and you don't look that tough.' They advance.",
@@ -918,7 +918,7 @@ export const storyNodes = {
       },
       {
         text: "Surrender your gold without a fight",
-        next: "clearing",
+        next: "dark_passage",
         isLessIdeal: true,
         rpgEffects: { gold: -20 },
         successText:
@@ -954,7 +954,126 @@ export const storyNodes = {
   },
 
   // ============================================================
-  // SCENE 19: The Radiant Pool
+  // SCENE 19: The Dark Passage
+  // ============================================================
+  dark_passage: {
+    title: "The Dark Passage",
+    chapter: "Chapter 1 — The Murkwood Crossing",
+    art: "🕳️",
+    narrative:
+      "Beyond the bandit ambush, the trail narrows to a rocky ravine. The trees thin out, replaced by mossy stone walls that rise on both sides. Ahead, the path splits. To the left, a gaping cave mouth yawns open — pitch black, with a foul wind breathing out of it like some living thing. Strange scratch marks line the stone around the entrance, and the bones of small animals are scattered near the threshold. To the right, the trail continues along the ridgeline through the forest — longer, but open to what pale light filters through the canopy.",
+    partyNarrative: {
+      grimjaw:
+        "Grimjaw peers into the cave and spits. 'Something lives in there. Something big. I can smell it.'",
+      lyralei:
+        "Lyralei holds her staff forward, but its glow dies at the cave's mouth as if the darkness swallows it. 'There's a presence in there. Old. Hungry. We should not enter blind.'",
+      silas:
+        "Silas studies the claw marks with professional interest. 'These scratches are fresh. Whatever made them has claws the length of short swords. Your call, knight.'",
+    },
+    choices: [
+      {
+        text: "Light your torch and enter the cave",
+        next: "dark_passage_lit",
+        requiresItem: "torch",
+        lockedText: "You reach for a torch, but you don't have one. The cave is impossibly dark — you'd be walking in blind.",
+        consumesItems: ["torch"],
+        rpgEffects: { xp: 10 },
+        successText:
+          "You strike the torch alight. Warm flame pushes back the darkness, and you step into the cave with fire held high.",
+      },
+      {
+        text: "Enter the cave without a light — how bad can it be?",
+        next: "jabberwocky_death",
+        successText:
+          "You step into the blackness. For a moment, there is only the sound of dripping water and your own breathing. Then something enormous shifts in the dark ahead of you...",
+      },
+      {
+        text: "Take the forest trail around — the long way is the safe way",
+        next: "clearing",
+        successText:
+          "You follow the ridgeline trail. It's longer, but the fading daylight guides your steps. Sometimes the wisest choice is the cautious one.",
+      },
+    ],
+  },
+
+  // ============================================================
+  // SCENE 19b: The Lit Cave
+  // ============================================================
+  dark_passage_lit: {
+    title: "The Jabberwocky's Lair",
+    chapter: "Chapter 1 — The Murkwood Crossing",
+    art: "🔥",
+    narrative:
+      "Your torch casts dancing shadows on the cave walls as you advance. The passage is wide enough for two abreast, with a ceiling lost in darkness above. Then your torchlight catches something that stops you cold — a massive shape curled against the far wall. A Jabberwocky. The creature is enormous: scaled hide the color of diseased iron, jaws lined with teeth like broken swords, and claws that could shred plate armor like parchment. It stirs at the light, one yellow eye cracking open. But the fire makes it flinch. It hisses — a sound like steam escaping a forge — and retreats deeper into the shadows, unwilling to challenge the flame. You edge past its nest of bones and torn armor, heart hammering, and emerge from the far side of the cave into a silver-lit clearing.",
+    partyNarrative: {
+      grimjaw:
+        "Grimjaw whispers through clenched teeth, barely breathing: 'That thing could eat a horse whole. Bless that torch, knight. Bless it.'",
+      lyralei:
+        "Lyralei's face is white. 'A Jabberwocky. They hunt by sound and smell in total darkness. Without that torch, we would never have seen it coming.'",
+      silas:
+        "Silas moves like a ghost, daggers drawn, eyes locked on the creature until you're clear. 'Remember this. There will be more dark places ahead. Never enter one without a light.'",
+    },
+    choices: [
+      {
+        text: "Press on quickly into the clearing ahead",
+        next: "clearing",
+        rpgEffects: { xp: 5 },
+        bondEffect: { grimjaw: 5, lyralei: 5, silas: 5 },
+        moralImpact: 1,
+        successText:
+          "You emerge from the cave trembling but alive. The clearing ahead glows with an otherworldly silver light. Your companions look at you with new respect — that torch saved everyone's life.",
+      },
+      {
+        text: "Search the Jabberwocky's nest for anything useful",
+        next: "clearing",
+        rpgEffects: { xp: 5, gold: 25 },
+        successText:
+          "Among the bones and rusted armor, you find a pouch of gold coins from some less fortunate traveler. A grim reminder of what happens to those who wander these caves in the dark.",
+      },
+    ],
+  },
+
+  // ============================================================
+  // SCENE 19c: Jabberwocky Death
+  // ============================================================
+  jabberwocky_death: {
+    title: "It Is Very Dark",
+    chapter: "Chapter 1 — The Murkwood Crossing",
+    art: "🐲",
+    narrative:
+      "The darkness is absolute. You can't see your hand in front of your face. Water drips somewhere in the distance. Your footsteps echo off unseen walls. Then you hear it — a slow, wet breathing, deep and rhythmic, like bellows in a forge. The stench hits you next: rotting meat and sulfur. Something massive scrapes against stone ahead. Two yellow eyes open in the darkness, each the size of a dinner plate, slitted like a cat's and burning with dim, hungry intelligence. A Jabberwocky. The creature's jaws open with a sound like cracking timber, and a blast of fetid air washes over you. Without light, you never had a chance. The darkness was its domain, and you walked right into it.",
+    partyNarrative: {
+      grimjaw:
+        "Grimjaw roars a challenge into the dark, but the sound is swallowed by the cave. 'I can't see it! Where is —'",
+      lyralei:
+        "Lyralei tries to conjure light, but the cave's darkness is deeper than magic. 'No... no, no, NO —'",
+      silas:
+        "Even Silas, master of shadows, cannot fight what he cannot see. 'This was a mistake,' he whispers. For once, there is fear in his voice.",
+    },
+    choices: [
+      {
+        text: "Try to run back toward the entrance",
+        rpgEffects: { hp: -999 },
+        successText:
+          "You turn to flee, but the Jabberwocky is faster. In the dark, it is king. Its jaws close around you before you take three steps. Your adventure ends here — devoured in the darkness, another set of bones added to the Jabberwocky's nest. Remember: never enter a dark place without a torch.",
+      },
+      {
+        text: "Draw your weapon and fight blind",
+        rpgEffects: { hp: -999 },
+        successText:
+          "You swing wildly at the darkness, blade finding nothing but air. The Jabberwocky strikes from a direction you never expected. In absolute darkness, courage alone is not enough. Your quest ends here, in the belly of a beast you never saw. Remember: never enter a dark place without a torch.",
+      },
+      {
+        text: "Stand perfectly still and hope it passes",
+        rpgEffects: { hp: -999 },
+        successText:
+          "You hold your breath, but the Jabberwocky hunts by smell and sound — your heartbeat thunders like a drum in the silence. It finds you easily. The last thing you hear is the snap of enormous jaws. Remember: never enter a dark place without a torch.",
+      },
+    ],
+  },
+
+  // ============================================================
+  // SCENE 20: The Radiant Pool
   // ============================================================
   clearing: {
     title: "The Radiant Pool",
