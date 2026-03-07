@@ -5,6 +5,7 @@ import { useState } from "react";
 import GameEngine from "./engine/GameEngine.jsx";
 import NarniaGame from "./games/narnia/index.js";
 import DavidGame from "./games/david/index.js";
+import cookedIcon from "./img/cooked.png";
 
 const AVAILABLE_GAMES = {
   narnia: {
@@ -79,6 +80,18 @@ export default function GameSelector() {
           >
             Start Adventure →
           </button>
+        </div>
+
+        <div style={styles.footer}>
+          <a
+            href="https://buymeacoffee.com/chefboyrgb"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={styles.footerLink}
+            title="Support BookQuest"
+          >
+            <img src={cookedIcon} alt="Support" style={styles.footerIcon} />
+          </a>
         </div>
       </div>
     );
@@ -187,5 +200,25 @@ const styles = {
     transition: "all 0.3s",
     fontFamily: "inherit",
     boxShadow: "0 4px 15px rgba(201, 168, 76, 0.4)",
+  },
+  footer: {
+    position: "fixed",
+    bottom: "20px",
+    right: "20px",
+    display: "flex",
+    alignItems: "center",
+  },
+  footerLink: {
+    display: "inline-block",
+    textDecoration: "none",
+    transition: "transform 0.3s",
+  },
+  footerIcon: {
+    width: "50px",
+    height: "50px",
+    borderRadius: "50%",
+    boxShadow: "0 4px 12px rgba(201, 168, 76, 0.3)",
+    transition: "all 0.3s",
+    cursor: "pointer",
   },
 };
