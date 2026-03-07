@@ -52,6 +52,13 @@ export default function GameEngine({ content }) {
   const [score, setScore] = useState(0);
   const [message, setMessage] = useState("");
   const [valuesScore, setValuesScore] = useState(0);
+  const [resultScreen, setResultScreen] = useState({
+    active: false,
+    text: "",
+    nextScene: null,
+    endsStory: false,
+    finalScore: 0,
+  });
   const [decisionLog, setDecisionLog] = useState([]);
   const [summaryState, setSummaryState] = useState({
     visible: false,
@@ -453,6 +460,8 @@ export default function GameEngine({ content }) {
     const partyPower = calculatePartyPower("attack");
     const ratio = partyPower / encounter.enemyPower;
 
+    setBattleState({ active: false, encounter: null });
+
     if (action === "fight") {
       if (ratio >= 0.7) {
         // WIN — damage inversely proportional to power ratio
@@ -480,14 +489,18 @@ export default function GameEngine({ content }) {
         );
 
         setScore((prev) => prev + 15);
-        setMessage(encounter.winText || "Victory! Your party stands triumphant.");
-        setCurrentScene(encounter.winNext);
+        setResultScreen({
+          active: true,
+          text: encounter.winText || "Victory! Your party stands triumphant.",
+          nextScene: encounter.winNext,
+          endsStory: false,
+          finalScore: 0,
+        });
       } else {
         // LOSE
         if (encounter.fatal) {
           setRpgStats((prev) => ({ ...prev, hp: 0 }));
           setGameOver(true);
-          setBattleState({ active: false, encounter: null });
           return;
         }
         const damage = Math.round(encounter.enemyPower * 0.6);
@@ -499,27 +512,37 @@ export default function GameEngine({ content }) {
             hp: Math.max(0, m.hp - Math.round(damage * 0.5)),
           })),
         );
-        setMessage(encounter.loseText || "You are overwhelmed and beaten back.");
-        setCurrentScene(encounter.loseNext || currentScene);
+        setResultScreen({
+          active: true,
+          text: encounter.loseText || "You are overwhelmed and beaten back.",
+          nextScene: encounter.loseNext || currentScene,
+          endsStory: false,
+          finalScore: 0,
+        });
       }
     } else if (action === "flee") {
       const totalCunning = calculatePartyPower("cunning");
       const fleeDiff = encounter.fleeDifficulty || 8;
+      let fleeText;
 
       if (totalCunning >= fleeDiff) {
-        setMessage("You manage to disengage and retreat to safety.");
+        fleeText = "You manage to disengage and retreat to safety.";
       } else {
         const damage = Math.round(encounter.enemyPower * 0.25);
         setRpgStats((prev) => ({
           ...prev,
           hp: Math.max(1, prev.hp - damage),
         }));
-        setMessage("You escape, but take hits as you flee.");
+        fleeText = "You escape, but take hits as you flee.";
       }
-      setCurrentScene(encounter.fleeNext || currentScene);
+      setResultScreen({
+        active: true,
+        text: fleeText,
+        nextScene: encounter.fleeNext || currentScene,
+        endsStory: false,
+        finalScore: 0,
+      });
     }
-
-    setBattleState({ active: false, encounter: null });
   };
 
   const withMinimumChoices = (choices = [], activeScene, includeSetbackOption = true) => {
@@ -622,7 +645,7 @@ export default function GameEngine({ content }) {
     if (choice.setback || moralImpact < 0) {
       const scenarioSetbackSteps = choice.setbackSteps || buildScenarioSetbackSteps(choice, scene);
       setScore((prev) => Math.max(0, prev - 10));
-      setMessage("That move causes a setback. Work through the detour to regain momentum.");
+      setMessage("");
 
       // RPG: small XP for setback experience + bond from shared hardship
       if (isRPG && rpgStats) {
@@ -632,11 +655,19 @@ export default function GameEngine({ content }) {
         }
       }
 
-      setSetbackState({
+      // Show result of the bad choice before entering the setback flow
+      const setbackIntroText = choice.successText
+        || "That choice leads to trouble. Work through the detour to regain momentum.";
+      setResultScreen({
         active: true,
-        step: 0,
-        returnScene: choice.next || currentScene,
-        steps: scenarioSetbackSteps,
+        text: setbackIntroText,
+        nextScene: null, // handled specially
+        endsStory: false,
+        finalScore: 0,
+        _setbackPending: {
+          returnScene: choice.next || currentScene,
+          steps: scenarioSetbackSteps,
+        },
       });
       return;
     }
@@ -734,20 +765,54 @@ export default function GameEngine({ content }) {
     }
 
     const nextScore = score + 10;
+    setScore(nextScore);
+
+    const fullMessage = [choice.successText || "", rpgMessage].filter(Boolean).join(" ");
 
     if (choice.endsStory) {
-      setScore(nextScore);
-      setSummaryState({
-        visible: true,
+      // Show result screen first, then summary on "Next"
+      setResultScreen({
+        active: true,
+        text: fullMessage || "Your journey reaches its conclusion.",
+        nextScene: null,
+        endsStory: true,
         finalScore: nextScore,
       });
       return;
     }
 
-    const fullMessage = [choice.successText || "", rpgMessage].filter(Boolean).join(" ");
-    setMessage(fullMessage);
-    setScore(nextScore);
-    setCurrentScene(choice.next);
+    // Show an outcome screen with the result text and a Next button
+    setResultScreen({
+      active: true,
+      text: fullMessage || "You press onward.",
+      nextScene: choice.next,
+      endsStory: false,
+      finalScore: 0,
+    });
+  };
+
+  const handleResultNext = () => {
+    // If there's a pending setback, enter the setback flow
+    if (resultScreen._setbackPending) {
+      const { returnScene, steps } = resultScreen._setbackPending;
+      setResultScreen({ active: false, text: "", nextScene: null, endsStory: false, finalScore: 0 });
+      setSetbackState({
+        active: true,
+        step: 0,
+        returnScene,
+        steps,
+      });
+      return;
+    }
+    if (resultScreen.endsStory) {
+      setResultScreen({ active: false, text: "", nextScene: null, endsStory: false, finalScore: 0 });
+      setSummaryState({ visible: true, finalScore: resultScreen.finalScore });
+      return;
+    }
+    const nextScene = resultScreen.nextScene;
+    setResultScreen({ active: false, text: "", nextScene: null, endsStory: false, finalScore: 0 });
+    setMessage("");
+    setCurrentScene(nextScene);
   };
 
   const handleSetbackProgress = () => {
@@ -796,6 +861,7 @@ export default function GameEngine({ content }) {
     setMessage("");
     setValuesScore(0);
     setDecisionLog([]);
+    setResultScreen({ active: false, text: "", nextScene: null, endsStory: false, finalScore: 0 });
     setSummaryState({ visible: false, finalScore: 0 });
     setSetbackState({
       active: false,
@@ -832,6 +898,30 @@ export default function GameEngine({ content }) {
 
   const goodChoices = decisionLog.filter((entry) => entry.impact > 0);
   const badChoices = decisionLog.filter((entry) => entry.impact < 0);
+
+  // === Result / Outcome Screen ===
+  if (resultScreen.active) {
+    return (
+      <div style={styles.container}>
+        <div style={styles.header}>
+          <h1 style={styles.title}>{isRPG ? "🐉 The Dragon's Laire" : "📖 Book Quest"}</h1>
+          <p style={styles.subtitle}>{metadata.title}</p>
+        </div>
+        <div style={styles.main}>
+          <div style={styles.scene}>
+            <div style={styles.art}>{activeScene.art || "📖"}</div>
+            <h2 style={styles.chapter}>{activeScene.chapter}</h2>
+            <p style={styles.resultText}>{formatNarrative(resultScreen.text)}</p>
+            <div style={styles.buttonRow}>
+              <button onClick={handleResultNext} style={styles.nextButton}>
+                Next →
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // === RPG: Name Input Screen ===
   if (isRPG && !playerName) {
@@ -1323,6 +1413,27 @@ const styles = {
     fontSize: "14px",
   },
   // RPG-specific styles
+  resultText: {
+    fontSize: "clamp(16px, 4vw, 20px)",
+    lineHeight: "1.8",
+    color: "#f3d27a",
+    textAlign: "center",
+    margin: "24px 0 32px",
+    fontStyle: "italic",
+  },
+  nextButton: {
+    padding: "16px 48px",
+    background: "linear-gradient(135deg, #c9a84c 0%, #e8c84c 100%)",
+    border: "none",
+    borderRadius: "8px",
+    color: "#1a1a2e",
+    fontSize: "clamp(16px, 3.5vw, 18px)",
+    fontWeight: "bold",
+    cursor: "pointer",
+    transition: "all 0.3s",
+    fontFamily: "inherit",
+    boxShadow: "0 4px 15px rgba(201, 168, 76, 0.4)",
+  },
   nameInputContainer: {
     display: "flex",
     flexDirection: "column",
