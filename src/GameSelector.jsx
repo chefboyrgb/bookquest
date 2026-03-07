@@ -44,7 +44,7 @@ export default function GameSelector() {
               <p style={styles.subtitle}>Choose Your Adventure</p>
             </div>
             <a
-              href="https://www.buymeacoffee.com"
+              href="https://buymeacoffee.com/chefboyrgb"
               target="_blank"
               rel="noopener noreferrer"
               style={styles.donateButton}
