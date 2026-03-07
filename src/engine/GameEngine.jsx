@@ -65,6 +65,22 @@ export default function GameEngine({ content }) {
   });
   const awardedScenesRef = useRef(new Set());
 
+  // RPG state (active only when metadata.gameType === 'rpg')
+  const isRPG = content.metadata?.gameType === "rpg";
+  const [playerName, setPlayerName] = useState("");
+  const [nameInputValue, setNameInputValue] = useState("");
+  const [rpgStats, setRpgStats] = useState(() =>
+    content.metadata?.gameType === "rpg" && content.rpgConfig?.startingStats
+      ? { ...content.rpgConfig.startingStats }
+      : null,
+  );
+  const [party, setParty] = useState([]);
+  const [gameOver, setGameOver] = useState(false);
+  const [battleState, setBattleState] = useState({
+    active: false,
+    encounter: null,
+  });
+
   // Unpack content modules
   const { metadata, storyNodes, items = {} } = content;
   const scene = storyNodes[currentScene];
@@ -369,6 +385,143 @@ export default function GameEngine({ content }) {
     return DEFAULT_SETBACK_STEPS;
   };
 
+  // === RPG Helper Functions ===
+
+  const getHealthStatus = (hp, maxHp) => {
+    const pct = hp / maxHp;
+    if (pct >= 0.75) return { label: "Strong", color: "#4ade80" };
+    if (pct >= 0.5) return { label: "Fatigued", color: "#fbbf24" };
+    if (pct >= 0.25) return { label: "Wounded", color: "#f97316" };
+    if (pct > 0) return { label: "Critical", color: "#ef4444" };
+    return { label: "Fallen", color: "#991b1b" };
+  };
+
+  const getPlayerHealthNarrative = () => {
+    if (!isRPG || !rpgStats) return null;
+    const pct = rpgStats.hp / rpgStats.maxHp;
+    if (pct >= 0.75) return null;
+    if (pct >= 0.5)
+      return "⚠️ Your muscles ache and small cuts sting with each movement.";
+    if (pct >= 0.25)
+      return "⚠️ You're limping now. Every breath is labored and your vision blurs.";
+    return "⚠️ Your body is failing. Each step could be your last without healing.";
+  };
+
+  const getBondLevel = (bond) => {
+    if (bond >= 80) return "trustedAlly";
+    if (bond >= 60) return "friend";
+    if (bond >= 40) return "companion";
+    if (bond >= 20) return "acquaintance";
+    return "stranger";
+  };
+
+  const getBondLabel = (bond) => {
+    if (bond >= 80) return "Trusted Ally";
+    if (bond >= 60) return "Friend";
+    if (bond >= 40) return "Companion";
+    if (bond >= 20) return "Acquaintance";
+    return "Stranger";
+  };
+
+  const getBondFlavor = (memberId, bond) => {
+    const descs = content.rpgConfig?.bondDescriptions?.[memberId];
+    if (!descs) return "";
+    const level = getBondLevel(bond);
+    return descs[level] || "";
+  };
+
+  const calculatePartyPower = (stat = "attack") => {
+    if (!rpgStats) return 0;
+    const playerStat = rpgStats[stat] || 0;
+    const partyStat = party.reduce(
+      (sum, m) => sum + (m.hp > 0 ? m[stat] || 0 : 0),
+      0,
+    );
+    return playerStat + partyStat;
+  };
+
+  const formatNarrative = (text) => {
+    if (!text) return "";
+    if (!isRPG || !playerName) return text;
+    return text.replace(/\{playerName\}/g, playerName);
+  };
+
+  const handleBattleAction = (action) => {
+    const { encounter } = battleState;
+    if (!encounter || !rpgStats) return;
+
+    const partyPower = calculatePartyPower("attack");
+    const ratio = partyPower / encounter.enemyPower;
+
+    if (action === "fight") {
+      if (ratio >= 0.7) {
+        // WIN — damage inversely proportional to power ratio
+        const rawDamage = Math.max(5, Math.round(25 * (1 - (ratio - 0.7))));
+        const playerDamage = Math.max(0, rawDamage - Math.floor(rpgStats.defense * 0.3));
+        const xpGain = (encounter.xpReward || 0) + Math.round(encounter.enemyPower * 1.2);
+        const goldGain = encounter.goldReward || 0;
+
+        const newHp = Math.max(1, rpgStats.hp - playerDamage);
+
+        setRpgStats((prev) => ({
+          ...prev,
+          hp: newHp,
+          xp: prev.xp + xpGain,
+          gold: prev.gold + goldGain,
+        }));
+
+        // Party takes damage and gains bond from combat
+        setParty((prev) =>
+          prev.map((m) => ({
+            ...m,
+            hp: Math.max(0, m.hp - Math.round(playerDamage * 0.6)),
+            bond: Math.min(100, m.bond + 5),
+          })),
+        );
+
+        setScore((prev) => prev + 15);
+        setMessage(encounter.winText || "Victory! Your party stands triumphant.");
+        setCurrentScene(encounter.winNext);
+      } else {
+        // LOSE
+        if (encounter.fatal) {
+          setRpgStats((prev) => ({ ...prev, hp: 0 }));
+          setGameOver(true);
+          setBattleState({ active: false, encounter: null });
+          return;
+        }
+        const damage = Math.round(encounter.enemyPower * 0.6);
+        const newHp = Math.max(1, rpgStats.hp - damage);
+        setRpgStats((prev) => ({ ...prev, hp: newHp }));
+        setParty((prev) =>
+          prev.map((m) => ({
+            ...m,
+            hp: Math.max(0, m.hp - Math.round(damage * 0.5)),
+          })),
+        );
+        setMessage(encounter.loseText || "You are overwhelmed and beaten back.");
+        setCurrentScene(encounter.loseNext || currentScene);
+      }
+    } else if (action === "flee") {
+      const totalCunning = calculatePartyPower("cunning");
+      const fleeDiff = encounter.fleeDifficulty || 8;
+
+      if (totalCunning >= fleeDiff) {
+        setMessage("You manage to disengage and retreat to safety.");
+      } else {
+        const damage = Math.round(encounter.enemyPower * 0.25);
+        setRpgStats((prev) => ({
+          ...prev,
+          hp: Math.max(1, prev.hp - damage),
+        }));
+        setMessage("You escape, but take hits as you flee.");
+      }
+      setCurrentScene(encounter.fleeNext || currentScene);
+    }
+
+    setBattleState({ active: false, encounter: null });
+  };
+
   const withMinimumChoices = (choices = [], activeScene, includeSetbackOption = true) => {
     const normalized = [...choices];
     const fallbackNext = normalized[0]?.next ?? currentScene;
@@ -412,8 +565,46 @@ export default function GameEngine({ content }) {
       return;
     }
 
+    // RPG: Gold requirement
+    if (isRPG && choice.requiresGold && rpgStats && rpgStats.gold < choice.requiresGold) {
+      setMessage(choice.failText || `You need ${choice.requiresGold} gold. You only have ${rpgStats.gold}.`);
+      return;
+    }
+
+    // RPG: Cunning requirement (player + alive party members)
+    if (isRPG && choice.requiresCunning && rpgStats) {
+      const totalCunning = rpgStats.cunning + party.reduce((s, m) => s + (m.hp > 0 ? m.cunning : 0), 0);
+      if (totalCunning < choice.requiresCunning) {
+        setMessage(choice.failText || "Your words fall flat. You'll need more cunning for that approach.");
+        return;
+      }
+    }
+
+    // RPG: Attack requirement
+    if (isRPG && choice.requiresAttack && rpgStats) {
+      const totalAttack = rpgStats.attack + party.reduce((s, m) => s + (m.hp > 0 ? m.attack : 0), 0);
+      if (totalAttack < choice.requiresAttack) {
+        setMessage(choice.failText || "You're not strong enough for that yet.");
+        return;
+      }
+    }
+
+    // RPG: Battle encounter — switch to battle assessment screen
+    if (isRPG && choice.battleEncounter) {
+      setBattleState({
+        active: true,
+        encounter: { ...choice.battleEncounter, originChoice: choice },
+      });
+      return;
+    }
+
     if (choice.consumesItems?.length) {
       setInventory((prev) => prev.filter((itemId) => !choice.consumesItems.includes(itemId)));
+    }
+
+    // RPG: Award items declared on the choice itself
+    if (choice.itemsGained?.length) {
+      setInventory((prev) => Array.from(new Set([...prev, ...choice.itemsGained])));
     }
 
     const moralImpact =
@@ -432,6 +623,15 @@ export default function GameEngine({ content }) {
       const scenarioSetbackSteps = choice.setbackSteps || buildScenarioSetbackSteps(choice, scene);
       setScore((prev) => Math.max(0, prev - 10));
       setMessage("That move causes a setback. Work through the detour to regain momentum.");
+
+      // RPG: small XP for setback experience + bond from shared hardship
+      if (isRPG && rpgStats) {
+        setRpgStats((prev) => ({ ...prev, xp: prev.xp + 2 }));
+        if (party.length > 0) {
+          setParty((prev) => prev.map((m) => ({ ...m, bond: Math.min(100, m.bond + 1) })));
+        }
+      }
+
       setSetbackState({
         active: true,
         step: 0,
@@ -439,6 +639,98 @@ export default function GameEngine({ content }) {
         steps: scenarioSetbackSteps,
       });
       return;
+    }
+
+    // === RPG Effects (non-setback choices only) ===
+    let rpgMessage = "";
+    if (isRPG && rpgStats) {
+      const hpChange = (choice.rpgEffects?.hp || 0) + (choice.healAmount || 0);
+      const goldChange = choice.rpgEffects?.gold || 0;
+      const baseXp = 10;
+      const bonusXp = choice.rpgEffects?.xp || 0;
+      const xpGain = baseXp + bonusXp;
+      const statAtk = choice.statBoost?.attack || 0;
+      const statDef = choice.statBoost?.defense || 0;
+      const statCun = choice.statBoost?.cunning || 0;
+
+      // Check for death from HP loss
+      const projectedHp = Math.min(rpgStats.maxHp, Math.max(0, rpgStats.hp + hpChange));
+      if (projectedHp <= 0 && hpChange < 0) {
+        setRpgStats((prev) => ({ ...prev, hp: 0 }));
+        setGameOver(true);
+        return;
+      }
+
+      const newXp = rpgStats.xp + xpGain;
+      const thresholds = content.rpgConfig?.levelThresholds || [0, 50, 120, 200, 300];
+      let newLevel = rpgStats.level;
+      for (let i = thresholds.length - 1; i >= 0; i--) {
+        if (newXp >= thresholds[i]) {
+          newLevel = i + 1;
+          break;
+        }
+      }
+      const levelsGained = newLevel - rpgStats.level;
+
+      setRpgStats((prev) => ({
+        ...prev,
+        hp: levelsGained > 0
+          ? prev.maxHp + 10 * levelsGained
+          : Math.min(prev.maxHp, Math.max(0, prev.hp + hpChange)),
+        maxHp: prev.maxHp + 10 * levelsGained,
+        gold: Math.max(0, prev.gold + goldChange),
+        xp: newXp,
+        level: newLevel,
+        attack: prev.attack + statAtk + 2 * levelsGained,
+        defense: prev.defense + statDef + 1 * levelsGained,
+        cunning: prev.cunning + statCun + 1 * levelsGained,
+      }));
+
+      if (levelsGained > 0) {
+        rpgMessage += `⬆️ Level up! You are now level ${newLevel}! `;
+      }
+
+      // Recruit party member
+      if (choice.recruitMember) {
+        const memberDef = content.rpgConfig?.partyMembers?.[choice.recruitMember];
+        if (memberDef && !party.find((m) => m.id === choice.recruitMember)) {
+          setParty((prev) => [...prev, { id: choice.recruitMember, ...memberDef }]);
+          rpgMessage += `${memberDef.name} joins your party! `;
+        }
+      }
+
+      // Heal party members
+      if (choice.partyHealAmount && party.length > 0) {
+        const healAmt = choice.partyHealAmount;
+        setParty((prev) =>
+          prev.map((m) => ({
+            ...m,
+            hp: Math.min(m.maxHp, m.hp + healAmt),
+          })),
+        );
+      }
+
+      // HP loss for party from environmental effects
+      if (choice.partyHpEffect && party.length > 0) {
+        const hpEff = choice.partyHpEffect;
+        setParty((prev) =>
+          prev.map((m) => ({
+            ...m,
+            hp: Math.max(0, m.hp + hpEff),
+          })),
+        );
+      }
+
+      // Advance bonds — base gain per scene + any choice-specific bonuses
+      if (party.length > 0) {
+        const bondEffects = choice.bondEffect || {};
+        setParty((prev) =>
+          prev.map((m) => ({
+            ...m,
+            bond: Math.min(100, m.bond + 2 + (bondEffects[m.id] || 0)),
+          })),
+        );
+      }
     }
 
     const nextScore = score + 10;
@@ -452,7 +744,8 @@ export default function GameEngine({ content }) {
       return;
     }
 
-    setMessage(choice.successText || "");
+    const fullMessage = [choice.successText || "", rpgMessage].filter(Boolean).join(" ");
+    setMessage(fullMessage);
     setScore(nextScore);
     setCurrentScene(choice.next);
   };
@@ -511,6 +804,19 @@ export default function GameEngine({ content }) {
       steps: DEFAULT_SETBACK_STEPS,
     });
     awardedScenesRef.current = new Set();
+    // RPG resets
+    if (isRPG) {
+      setPlayerName("");
+      setNameInputValue("");
+      setRpgStats(
+        content.rpgConfig?.startingStats
+          ? { ...content.rpgConfig.startingStats }
+          : null,
+      );
+      setParty([]);
+      setGameOver(false);
+      setBattleState({ active: false, encounter: null });
+    }
   };
 
   if (!scene) {
@@ -527,6 +833,154 @@ export default function GameEngine({ content }) {
   const goodChoices = decisionLog.filter((entry) => entry.impact > 0);
   const badChoices = decisionLog.filter((entry) => entry.impact < 0);
 
+  // === RPG: Name Input Screen ===
+  if (isRPG && !playerName) {
+    return (
+      <div style={styles.container}>
+        <div style={styles.header}>
+          <h1 style={styles.title}>🐉 The Dragon's Laire</h1>
+          <p style={styles.subtitle}>A Medieval RPG Adventure</p>
+        </div>
+        <div style={styles.main}>
+          <div style={styles.scene}>
+            <div style={styles.art}>🛡️</div>
+            <h3 style={styles.sceneTitle}>Create Your Character</h3>
+            <p style={styles.narrative}>
+              A wandering knight enters the guild hall — battle-worn, homeless,
+              and haunted by the destruction of Thornwall. Your kingdom was
+              burned to ash by the dragon Lurch. Everything you knew is gone.
+              But a knight without a name is a knight without purpose. What name
+              do you carry?
+            </p>
+            <div style={styles.nameInputContainer}>
+              <input
+                type="text"
+                value={nameInputValue}
+                onChange={(e) => setNameInputValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && nameInputValue.trim()) {
+                    setPlayerName(nameInputValue.trim());
+                  }
+                }}
+                placeholder="Enter your knight's name..."
+                style={styles.nameInput}
+                maxLength={24}
+                autoFocus
+              />
+              <button
+                onClick={() => {
+                  if (nameInputValue.trim()) {
+                    setPlayerName(nameInputValue.trim());
+                  }
+                }}
+                style={{
+                  ...styles.choiceButton,
+                  ...(nameInputValue.trim() ? {} : { opacity: 0.5, cursor: "not-allowed" }),
+                }}
+                disabled={!nameInputValue.trim()}
+              >
+                Begin Quest →
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // === RPG: Game Over Screen ===
+  if (isRPG && gameOver) {
+    return (
+      <div style={styles.container}>
+        <div style={styles.header}>
+          <h1 style={{ ...styles.title, color: "#ef4444" }}>💀 Fallen in Battle</h1>
+          <p style={styles.subtitle}>{metadata.title}</p>
+        </div>
+        <div style={styles.main}>
+          <div style={styles.scene}>
+            <div style={styles.art}>⚰️</div>
+            <h3 style={styles.sceneTitle}>Your Journey Ends Here</h3>
+            <p style={styles.narrative}>
+              {playerName}'s wounds prove fatal. The quest to rescue Prince Elo
+              ends in the darkness, another hero lost to the perils between
+              Laffter Land and the Badlands. Perhaps another knight will succeed
+              where you could not.
+            </p>
+            <div style={styles.buttonRow}>
+              <button onClick={handlePlayAgain} style={styles.choiceButton}>
+                Try Again →
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // === RPG: Battle Assessment Screen ===
+  if (isRPG && battleState.active && battleState.encounter) {
+    const enc = battleState.encounter;
+    const partyPower = calculatePartyPower("attack");
+    const ratio = partyPower / enc.enemyPower;
+    let assessment;
+    if (ratio >= 1.5) {
+      assessment = { text: "You feel confident about this fight.", color: "#4ade80", icon: "✅" };
+    } else if (ratio >= 1.0) {
+      assessment = { text: "The odds are roughly even — expect some wounds.", color: "#fbbf24", icon: "⚖️" };
+    } else if (ratio >= 0.7) {
+      assessment = { text: "This will be a dangerous fight. Proceed with caution.", color: "#f97316", icon: "⚠️" };
+    } else {
+      assessment = { text: "This fight would be suicidal. You are vastly outmatched.", color: "#ef4444", icon: "💀" };
+    }
+
+    return (
+      <div style={styles.container}>
+        <div style={styles.header}>
+          <h1 style={styles.title}>⚔️ Battle!</h1>
+          <p style={styles.subtitle}>{enc.enemy}</p>
+        </div>
+        <div style={styles.main}>
+          <div style={styles.scene}>
+            <div style={styles.art}>⚔️</div>
+            <h3 style={styles.sceneTitle}>{enc.enemy}</h3>
+            <p style={styles.narrative}>{enc.description}</p>
+            <div style={{
+              ...styles.inventory,
+              borderColor: assessment.color,
+              background: `${assessment.color}15`,
+            }}>
+              <strong>{assessment.icon} Assessment:</strong> {assessment.text}
+              <br />
+              <span style={{ fontSize: "13px", opacity: 0.8 }}>
+                Your strength: {partyPower} vs Enemy: {enc.enemyPower}
+              </span>
+            </div>
+            {getPlayerHealthNarrative() && (
+              <p style={styles.healthWarning}>{getPlayerHealthNarrative()}</p>
+            )}
+            <div style={styles.choices}>
+              <button onClick={() => handleBattleAction("fight")} style={styles.choiceButton}>
+                Fight! →
+              </button>
+              <button onClick={() => handleBattleAction("flee")} style={styles.choiceButton}>
+                Flee! →
+              </button>
+              <button
+                onClick={() => {
+                  setBattleState({ active: false, encounter: null });
+                  setMessage("You back down from the confrontation.");
+                }}
+                style={styles.choiceButton}
+              >
+                Back down — choose differently →
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (summaryState.visible) {
     return (
       <div style={styles.container}>
@@ -539,8 +993,32 @@ export default function GameEngine({ content }) {
           <div style={styles.scene}>
             <h2 style={styles.sceneTitle}>Final Score: {summaryState.finalScore} points</h2>
             <p style={styles.narrative}>
-              You completed the story. Here is how your decisions shaped the journey.
+              {isRPG && playerName
+                ? `${playerName}'s chapter is complete. Here is how your decisions shaped the journey.`
+                : "You completed the story. Here is how your decisions shaped the journey."}
             </p>
+
+            {isRPG && rpgStats && (
+              <div style={styles.rpgSummaryStats}>
+                <span>⭐ Level {rpgStats.level}</span>
+                <span>💰 {rpgStats.gold} gold</span>
+                <span>⚔️ ATK {rpgStats.attack}</span>
+                <span>🛡️ DEF {rpgStats.defense}</span>
+                <span>🧠 CUN {rpgStats.cunning}</span>
+                <span>👥 Party: {party.length}</span>
+              </div>
+            )}
+
+            {isRPG && party.length > 0 && (
+              <div style={styles.summaryCard}>
+                <h4 style={styles.summaryHeading}>Companions</h4>
+                {party.map((member) => (
+                  <div key={member.id} style={styles.partyRow}>
+                    <span>{member.icon} {member.name} — {getBondLabel(member.bond)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
 
             <div style={styles.summaryGrid}>
               <div style={styles.summaryCard}>
@@ -588,7 +1066,7 @@ export default function GameEngine({ content }) {
   return (
     <div style={styles.container}>
       <div style={styles.header}>
-        <h1 style={styles.title}>📖 Book Quest</h1>
+        <h1 style={styles.title}>{isRPG ? "🐉 The Dragon's Laire" : "📖 Book Quest"}</h1>
         <p style={styles.subtitle}>{metadata.title}</p>
       </div>
 
@@ -597,7 +1075,42 @@ export default function GameEngine({ content }) {
           <div style={styles.art}>{activeScene.art}</div>
           <h2 style={styles.chapter}>{activeScene.chapter}</h2>
           <h3 style={styles.sceneTitle}>{activeScene.title}</h3>
-          <p style={styles.narrative}>{activeScene.narrative}</p>
+          <p style={styles.narrative}>{formatNarrative(activeScene.narrative)}</p>
+
+          {/* RPG: Player health warning */}
+          {getPlayerHealthNarrative() && (
+            <p style={styles.healthWarning}>{getPlayerHealthNarrative()}</p>
+          )}
+
+          {/* RPG: Party comments for the current scene */}
+          {isRPG && !setbackState.active && scene.partyNarrative && party.map((member) => {
+            const comment = scene.partyNarrative[member.id];
+            if (!comment) return null;
+            return (
+              <p key={member.id} style={styles.partyComment}>
+                {member.icon} {comment}
+              </p>
+            );
+          })}
+
+          {/* RPG: Party status display */}
+          {isRPG && party.length > 0 && (
+            <div style={styles.partyDisplay}>
+              <strong>⚔️ Party:</strong>
+              {party.map((member) => {
+                const health = getHealthStatus(member.hp, member.maxHp);
+                return (
+                  <div key={member.id} style={styles.partyMemberRow}>
+                    <span>{member.icon} {member.name}</span>
+                    <span style={{ color: health.color, fontSize: "13px" }}>{health.label}</span>
+                    <span style={{ color: "#a0826d", fontSize: "12px", fontStyle: "italic" }}>
+                      {getBondFlavor(member.id, member.bond) || getBondLabel(member.bond)}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
 
           {inventory.length > 0 && (
             <div style={styles.inventory}>
@@ -639,10 +1152,19 @@ export default function GameEngine({ content }) {
           {message && <p style={styles.message}>{message}</p>}
 
           <div style={styles.footer}>
-            <p>
-              Progress: {score} points | Scenes explored: {Math.floor(score / 10) + 1} |
-              Momentum: {valuesScore >= 0 ? "Steady" : "Recovering"}
-            </p>
+            {isRPG && rpgStats ? (
+              <p>
+                ❤️ {getHealthStatus(rpgStats.hp, rpgStats.maxHp).label} |
+                💰 {rpgStats.gold} gold |
+                ⭐ Lvl {rpgStats.level} ({rpgStats.xp} XP) |
+                ⚔️ {rpgStats.attack} 🛡️ {rpgStats.defense} 🧠 {rpgStats.cunning}
+              </p>
+            ) : (
+              <p>
+                Progress: {score} points | Scenes explored: {Math.floor(score / 10) + 1} |
+                Momentum: {valuesScore >= 0 ? "Steady" : "Recovering"}
+              </p>
+            )}
           </div>
         </div>
       </div>
@@ -799,5 +1321,76 @@ const styles = {
     textAlign: "center",
     color: "#a0826d",
     fontSize: "14px",
+  },
+  // RPG-specific styles
+  nameInputContainer: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "16px",
+    marginTop: "24px",
+    alignItems: "center",
+  },
+  nameInput: {
+    width: "100%",
+    maxWidth: "320px",
+    padding: "14px 16px",
+    background: "rgba(45, 40, 60, 0.9)",
+    border: "2px solid #c9a84c",
+    borderRadius: "8px",
+    color: "#e8d4b8",
+    fontSize: "18px",
+    fontFamily: "inherit",
+    textAlign: "center",
+    outline: "none",
+  },
+  healthWarning: {
+    color: "#f97316",
+    background: "rgba(249, 115, 22, 0.1)",
+    border: "1px solid rgba(249, 115, 22, 0.3)",
+    borderRadius: "8px",
+    padding: "10px 12px",
+    fontSize: "14px",
+    fontStyle: "italic",
+    marginBottom: "12px",
+  },
+  partyComment: {
+    color: "#b8c4d4",
+    fontStyle: "italic",
+    fontSize: "14px",
+    margin: "4px 0",
+    paddingLeft: "8px",
+    borderLeft: "2px solid rgba(201, 168, 76, 0.3)",
+  },
+  partyDisplay: {
+    background: "rgba(100, 80, 140, 0.15)",
+    border: "1px solid rgba(160, 130, 200, 0.3)",
+    borderRadius: "8px",
+    padding: "12px",
+    marginBottom: "16px",
+    fontSize: "14px",
+    color: "#c9a84c",
+  },
+  partyMemberRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: "8px",
+    padding: "6px 0",
+    borderBottom: "1px solid rgba(201, 168, 76, 0.1)",
+    flexWrap: "wrap",
+  },
+  partyRow: {
+    padding: "4px 0",
+    fontSize: "14px",
+    color: "#d4ccc0",
+  },
+  rpgSummaryStats: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "12px",
+    justifyContent: "center",
+    marginBottom: "16px",
+    fontSize: "14px",
+    color: "#c9a84c",
   },
 };

@@ -1,5 +1,6 @@
 import NarniaGame from "./narnia/index.js";
 import DavidGame from "./david/index.js";
+import DragonsLairGame from "./dragons-lair/index.js";
 
 const isLocalDevelopment = import.meta.env.DEV;
 
@@ -19,6 +20,14 @@ export const AVAILABLE_GAMES = {
     emoji: "⚔️",
     enabled: true,
     content: DavidGame,
+  },
+  "dragons-lair": {
+    id: "dragons-lair",
+    title: "The Dragon's Laire",
+    author: "BookQuest Original",
+    emoji: "🐉",
+    enabled: true,
+    content: DragonsLairGame,
   },
   // Add more games here in the future:
   // charlotte: { ... enabled: true },
