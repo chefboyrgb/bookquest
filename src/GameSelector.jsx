@@ -203,8 +203,8 @@ const styles = {
   },
   footer: {
     position: "fixed",
-    bottom: "20px",
-    right: "20px",
+    bottom: "30px",
+    right: "30px",
     display: "flex",
     alignItems: "center",
   },
@@ -214,8 +214,8 @@ const styles = {
     transition: "transform 0.3s",
   },
   footerIcon: {
-    width: "50px",
-    height: "50px",
+    width: "75px",
+    height: "75px",
     borderRadius: "50%",
     boxShadow: "0 4px 12px rgba(201, 168, 76, 0.3)",
     transition: "all 0.3s",
