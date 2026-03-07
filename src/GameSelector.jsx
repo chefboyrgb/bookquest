@@ -204,7 +204,7 @@ const styles = {
   footer: {
     position: "fixed",
     bottom: "30px",
-    right: "30px",
+    right: "50px",
     display: "flex",
     alignItems: "center",
   },
