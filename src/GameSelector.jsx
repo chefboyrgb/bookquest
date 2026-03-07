@@ -3,35 +3,18 @@
 
 import { useState } from "react";
 import GameEngine from "./engine/GameEngine.jsx";
-import NarniaGame from "./games/narnia/index.js";
-import DavidGame from "./games/david/index.js";
+import { AVAILABLE_GAMES } from "./games/registry.js";
 import cookedIcon from "./img/cooked.png";
 
-const AVAILABLE_GAMES = {
-  narnia: {
-    id: "narnia",
-    title: "The Lion, the Witch and the Wardrobe",
-    author: "C.S. Lewis",
-    emoji: "🦁",
-    content: NarniaGame,
-  },
-  david: {
-    id: "david",
-    title: "The Life of David",
-    author: "Biblical Text (1 & 2 Samuel)",
-    emoji: "⚔️",
-    content: DavidGame,
-  },
-  // Add more games here in the future:
-  // charlotte: { ... },
-  // wrinkle: { ... },
-};
-
 export default function GameSelector() {
-  const [selectedGame, setSelectedGame] = useState("narnia");
+  const enabledGames = Object.values(AVAILABLE_GAMES).filter(
+    (game) => game.enabled !== false,
+  );
+  const [selectedGame, setSelectedGame] = useState(enabledGames[0]?.id ?? null);
   const [gameStarted, setGameStarted] = useState(false);
 
-  const currentGame = AVAILABLE_GAMES[selectedGame];
+  const currentGame =
+    enabledGames.find((game) => game.id === selectedGame) ?? enabledGames[0];
 
   // Show game selection screen
   if (!gameStarted) {
@@ -57,7 +40,7 @@ export default function GameSelector() {
         </div>
 
         <div style={styles.gameGrid}>
-          {Object.values(AVAILABLE_GAMES).map((game) => (
+          {enabledGames.map((game) => (
             <button
               key={game.id}
               onClick={() => setSelectedGame(game.id)}
@@ -71,12 +54,23 @@ export default function GameSelector() {
               <p style={styles.gameAuthor}>by {game.author}</p>
             </button>
           ))}
+
+          {enabledGames.length === 0 && (
+            <p style={styles.noGamesText}>
+              No games are enabled yet. Toggle `enabled: true` in
+              src/games/registry.js.
+            </p>
+          )}
         </div>
 
         <div style={styles.buttonContainer}>
           <button
-            onClick={() => setGameStarted(true)}
-            style={styles.startButton}
+            onClick={() => currentGame && setGameStarted(true)}
+            style={{
+              ...styles.startButton,
+              ...(currentGame ? {} : styles.startButtonDisabled),
+            }}
+            disabled={!currentGame}
           >
             Start Adventure →
           </button>
@@ -98,6 +92,17 @@ export default function GameSelector() {
   }
 
   // Show selected game
+  if (!currentGame) {
+    return (
+      <div style={styles.container}>
+        <div style={styles.header}>
+          <h1 style={styles.title}>📚 Book Quest</h1>
+          <p style={styles.subtitle}>No enabled games found</p>
+        </div>
+      </div>
+    );
+  }
+
   return <GameEngine content={currentGame.content} />;
 }
 
@@ -186,6 +191,15 @@ const styles = {
     color: "#a0826d",
     margin: "0",
   },
+  noGamesText: {
+    textAlign: "center",
+    color: "#c9a84c",
+    fontSize: "16px",
+    padding: "20px",
+    background: "rgba(45, 40, 60, 0.6)",
+    border: "1px solid rgba(201, 168, 76, 0.3)",
+    borderRadius: "12px",
+  },
   buttonContainer: {
     display: "flex",
     justifyContent: "center",
@@ -202,6 +216,10 @@ const styles = {
     transition: "all 0.3s",
     fontFamily: "inherit",
     boxShadow: "0 4px 15px rgba(201, 168, 76, 0.4)",
+  },
+  startButtonDisabled: {
+    opacity: 0.5,
+    cursor: "not-allowed",
   },
   footer: {
     position: "fixed",
