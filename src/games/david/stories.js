@@ -6,7 +6,39 @@ export const storyNodes = {
       "You are David, the youngest son of Jesse in Bethlehem. While your older brothers train for war, you tend your father's sheep in the fields, playing your harp and protecting the flock from wild animals with your sling and stones.",
     choices: [
       { text: "Play my harp to calm the sheep", next: "harp_moments" },
-      { text: "Practice with my sling", next: "sling_practice" }
+      { text: "Practice with my sling", next: "sling_practice" },
+      {
+        text: "Leave the flock to chase excitement in the hills",
+        next: "sling_practice",
+        isLessIdeal: true,
+        successText: "You lose time and return to your duties with consequences to manage.",
+        setbackSteps: [
+          {
+            title: "The Flock Scatters",
+            chapter: "Detour",
+            art: "🐑",
+            narrative:
+              "While you are gone, several sheep drift toward rough terrain. By the time you race back, one lamb is tangled in brush and another is missing from the line.",
+            choices: [
+              { text: "Search the hillside carefully" },
+              { text: "Call for your brother's help" },
+              { text: "Gather the flock before nightfall" }
+            ]
+          },
+          {
+            title: "Making It Right",
+            chapter: "Detour",
+            art: "🏠",
+            narrative:
+              "You recover the missing lamb and bring the flock home late. Your brother covers your unfinished chores, and you spend the evening repairing pens and earning back trust.",
+            choices: [
+              { text: "Thank your brother and help him" },
+              { text: "Finish the overdue chores" },
+              { text: "Return to the story with better focus" }
+            ]
+          }
+        ]
+      }
     ],
     art: "🐑"
   },
@@ -17,7 +49,39 @@ export const storyNodes = {
       "Your fingers dance across the harp strings. The melody seems to calm not just the sheep, but your own soul. You feel a deep peace, as if God is listening to your music.",
     choices: [
       { text: "Continue to Bethlehem market", next: "call_home" },
-      { text: "Tend a wounded lamb", next: "call_home" }
+      { text: "Tend a wounded lamb", next: "call_home" },
+      {
+        text: "Ignore the flock and play only for applause",
+        next: "call_home",
+        isLessIdeal: true,
+        successText: "Your priorities drift, and you have to recover your focus.",
+        setbackSteps: [
+          {
+            title: "Attention Slips",
+            chapter: "Detour",
+            art: "🎵",
+            narrative:
+              "You get carried away performing, and fail to notice a sheep limping near the edge of the field. Precious time is lost before anyone spots the problem.",
+            choices: [
+              { text: "Stop and check the flock immediately" },
+              { text: "Bring water and wrap the injured leg" },
+              { text: "Ask family for help carrying supplies" }
+            ]
+          },
+          {
+            title: "Refocus",
+            chapter: "Detour",
+            art: "🧺",
+            narrative:
+              "After helping care for the injured sheep, you realize leadership means service first. You return to your work with clearer priorities.",
+            choices: [
+              { text: "Care for the flock before music" },
+              { text: "Finish missed responsibilities" },
+              { text: "Continue with renewed discipline" }
+            ]
+          }
+        ]
+      }
     ],
     art: "🎵"
   },
@@ -28,7 +92,39 @@ export const storyNodes = {
       "You whirl your sling, practicing your aim. A lion once attacked your flock—you killed it. A bear came—you killed that too. Your faith has made you strong.",
     choices: [
       { text: "Head home with the sheep", next: "call_home" },
-      { text: "Scout the fields", next: "call_home" }
+      { text: "Scout the fields", next: "call_home" },
+      {
+        text: "Test my aim too close to the flock",
+        next: "call_home",
+        isLessIdeal: true,
+        successText: "A careless test creates trouble you must work through.",
+        setbackSteps: [
+          {
+            title: "A Careless Shot",
+            chapter: "Detour",
+            art: "🪨",
+            narrative:
+              "The stone ricochets and startles the flock. One sheep stumbles and cuts its leg on a rock. You rush it back to the house for treatment, losing an entire day of fieldwork.",
+            choices: [
+              { text: "Carry the sheep home for care" },
+              { text: "Clean and bandage the wound" },
+              { text: "Ask your brother to cover the flock" }
+            ]
+          },
+          {
+            title: "Cost of Carelessness",
+            chapter: "Detour",
+            art: "🩹",
+            narrative:
+              "Your brother misses his own chores to watch the flock while you tend the injured sheep. By evening, everyone is tired, and you understand why discipline matters.",
+            choices: [
+              { text: "Apologize and take responsibility" },
+              { text: "Help your brother finish his chores" },
+              { text: "Resume the journey with better judgment" }
+            ]
+          }
+        ]
+      }
     ],
     art: "🎯",
     itemsGained: ["shepherd_staff"]
@@ -244,63 +340,62 @@ export const storyNodes = {
     title: "A Growing Kingdom",
     chapter: "Chapter 14",
     narrative:
-      "Under your leadership, Israel grows strong. Your armies win victories. Your wisdom brings justice. The kingdom expands. But prosperity sometimes brings temptation. One evening, from your palace, you see a woman bathing.",
+      "Under your leadership, Israel grows strong. Your armies win victories, your judges defend the weak, and your counselors help establish peace across the tribes. With success comes pressure, and every decision shapes the nation's future.",
     choices: [
-      { text: "Look away", next: "bathsheba_lesson" },
-      { text: "Summon her", next: "bathsheba_temptation" }
+      { text: "Strengthen justice in every city", next: "kingdom_peace" },
+      { text: "Invest in the next generation of leaders", next: "kingdom_peace" },
+      {
+        text: "Rush major decisions without counsel",
+        next: "kingdom_peace",
+        isLessIdeal: true,
+        setbackSteps: [
+          {
+            title: "Rushed Orders",
+            chapter: "Detour",
+            art: "📜",
+            narrative:
+              "Hasty orders create confusion between city leaders. Supplies are sent to the wrong district, and families wait longer for relief.",
+            choices: [
+              { text: "Gather reports from each district" },
+              { text: "Correct the misdirected orders" },
+              { text: "Reassign teams where needed" }
+            ]
+          },
+          {
+            title: "Restored Order",
+            chapter: "Detour",
+            art: "🤝",
+            narrative:
+              "With calmer planning and trusted counsel, the work gets back on track. The kingdom stabilizes again, and confidence returns.",
+            choices: [
+              { text: "Review plans with advisors" },
+              { text: "Communicate clearly to the cities" },
+              { text: "Continue on the restored path" }
+            ]
+          }
+        ]
+      }
     ],
     art: "🏰"
   },
-  bathsheba_temptation: {
-    title: "The Woman at the Well",
+  kingdom_peace: {
+    title: "A Season of Peace",
     chapter: "Chapter 15",
     narrative:
-      "Her name is Bathsheba, wife of Uriah, one of your loyal soldiers. You summon her to the palace. You lie with her. Then, to cover your sin, you command Uriah to the front lines where he is killed in battle. You have committed adultery and murder.",
+      "You focus on wise governance, worship, and service to the people. Trade routes reopen, families rebuild, and the kingdom enters a season of stability. Your house grows as well, and Solomon rises among your sons with uncommon wisdom.",
     choices: [
-      { text: "Marry Bathsheba to hide the sin", next: "nathan_confronts" },
-      { text: "Acknowledge the wrong", next: "nathan_confronts" }
+      { text: "Prepare Solomon and the leaders for what comes next", next: "legacy" },
+      { text: "Give thanks and continue serving faithfully", next: "legacy" },
+      { text: "Rest and reflect on your journey", next: "legacy" }
     ],
-    art: "⚠️"
-  },
-  bathsheba_lesson: {
-    title: "Virtue Protects the King",
-    chapter: "Chapter 15",
-    narrative:
-      "You look away from temptation. Your heart remains devoted to God and to your wife Michal. This small act of obedience keeps your soul clean. The kingdom prospers under wise and righteous rule.",
-    choices: [
-      { text: "Focus on the kingdom", next: "kingdom_peace" },
-      { text: "Pray for God's guidance", next: "kingdom_peace" }
-    ],
-    art: "✨"
-  },
-  nathan_confronts: {
-    title: "The Prophet's Judgment",
-    chapter: "Chapter 16",
-    narrative:
-      "Nathan the prophet comes to you and tells a story: 'A rich man with many flocks took the one lamb of a poor man.' You grow angry—'That man deserves death!' Nathan points at you: 'You are that man. You have sinned before the Lord.' Your heart breaks. You weep and repent.",
-    choices: [
-      { text: "Confess and seek forgiveness", next: "david_repents" },
-      { text: "Accept God's judgment", next: "david_repents" }
-    ],
-    art: "🎤"
-  },
-  david_repents: {
-    title: "True Repentance",
-    chapter: "Chapter 17",
-    narrative:
-      "You fall on your knees and cry out: 'I have sinned against the Lord!' You fast and pray for days. Your sin has cost you deeply—the child born to Bathsheba falls ill and dies. But God forgives you. He sends a new son, Solomon, whose name means 'peace.' Your repentance is genuine.",
-    choices: [
-      { text: "Rise as a changed man", next: "legacy" },
-      { text: "Build the kingdom with renewed faith", next: "legacy" }
-    ],
-    art: "😭"
+    art: "🕊️"
   },
   legacy: {
     title: "A King's Legacy",
     chapter: "Epilogue",
     narrative:
       "You have lived a long and full life—shepherd, warrior, king, and penitent. Your kingdom is strong. Your son Solomon will be even wiser than you. Though you stumbled into great sin, your repentance showed Israel that even a king must answer to God. Your name will be remembered forever. The Messiah himself will come from your line.",
-    choices: [{ text: "Rest in God's eternal promise", next: "legacy" }],
+    choices: [{ text: "View Journey Summary", endsStory: true }],
     art: "🌟"
   }
 };

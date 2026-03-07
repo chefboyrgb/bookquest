@@ -114,6 +114,37 @@ export const storyNodes = {
       },
       { text: "Keep running forward", next: "escape" },
       { text: "Hide and let her pass", next: "hide_witch" },
+      {
+        text: "Split up and run in different directions",
+        next: "aslan_camp",
+        isLessIdeal: true,
+        setbackSteps: [
+          {
+            title: "Separated in the Snow",
+            chapter: "Detour",
+            art: "🌨️",
+            narrative:
+              "The plan backfires. The forest is too chaotic, and you lose sight of one another in the blizzard. Wolf scouts circle nearby while everyone tries to reconnect.",
+            choices: [
+              { text: "Use landmarks to regroup" },
+              { text: "Call softly and follow the responses" },
+              { text: "Wait together in cover" }
+            ]
+          },
+          {
+            title: "Back Together",
+            chapter: "Detour",
+            art: "🧭",
+            narrative:
+              "After a tense delay, everyone finds each other again. You move as a united group, but the lost time means you must travel quickly to catch up.",
+            choices: [
+              { text: "Stay together from now on" },
+              { text: "Follow the safest route" },
+              { text: "Press on toward Aslan's camp" }
+            ]
+          }
+        ]
+      }
     ],
     art: "🏃",
   },
@@ -204,7 +235,7 @@ export const storyNodes = {
       "You stand in the magnificent throne room of Cair Paravel by the sea. Aslan places crowns upon your heads—and those of your siblings. 'In Narnia,' he says, 'you will rule justly and well. And you will be known as Kings and Queens of Narnia.' Years pass in a golden age of peace and plenty. But one day, while hunting, you all stumble upon an old, familiar landmark... and find yourselves back in the spare room, children again, gasping for breath. Was it all a dream? You touch your pocket and feel something—a small lion's tooth of gold. Perhaps it was more real than any dream.",
     art: "👑🦁",
     choices: [
-      { text: "Start Over", next: "start" },
+      { text: "View Journey Summary", endsStory: true },
     ],
   },
   battle: {
