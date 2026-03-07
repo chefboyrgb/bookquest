@@ -24,7 +24,7 @@ export default function GameSelector() {
           <div style={styles.headerTop}>
             <div></div>
             <div>
-              <h1 style={styles.title}>📚 Book Quest</h1>
+              <h1 style={styles.title}>📚 Reader's Quest</h1>
               <p style={styles.subtitle}>Choose Your Adventure</p>
             </div>
             <a
@@ -96,7 +96,7 @@ export default function GameSelector() {
     return (
       <div style={styles.container}>
         <div style={styles.header}>
-          <h1 style={styles.title}>📚 Book Quest</h1>
+          <h1 style={styles.title}>📚 Reader's Quest</h1>
           <p style={styles.subtitle}>No enabled games found</p>
         </div>
       </div>

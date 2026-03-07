@@ -904,7 +904,7 @@ export default function GameEngine({ content }) {
     return (
       <div style={styles.container}>
         <div style={styles.header}>
-          <h1 style={styles.title}>{isRPG ? "🐉 The Dragon's Laire" : "📖 Book Quest"}</h1>
+          <h1 style={styles.title}>{isRPG ? "🐉 The Dragon's Laire" : "📖 Reader's Quest"}</h1>
           <p style={styles.subtitle}>{metadata.title}</p>
         </div>
         <div style={styles.main}>
@@ -1156,7 +1156,7 @@ export default function GameEngine({ content }) {
   return (
     <div style={styles.container}>
       <div style={styles.header}>
-        <h1 style={styles.title}>{isRPG ? "🐉 The Dragon's Laire" : "📖 Book Quest"}</h1>
+        <h1 style={styles.title}>{isRPG ? "🐉 The Dragon's Laire" : "📖 Reader's Quest"}</h1>
         <p style={styles.subtitle}>{metadata.title}</p>
       </div>
 
