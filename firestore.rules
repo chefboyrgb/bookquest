@@ -1,0 +1,22 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Classes: anyone can create, query by joinCode or teacherCodeHash
+    match /classes/{classId} {
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasAll(['className', 'joinCode', 'teacherCodeHash', 'createdAt']);
+      allow delete: if true;  // Teacher manages deletion (validated client-side via hashed code)
+      allow update: if false; // Classes are immutable once created
+    }
+
+    // Sessions: anyone can read/write (no auth — zero PII model)
+    match /sessions/{sessionId} {
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasAll(['classId', 'studentName', 'gameId']);
+      allow update: if true;
+      allow delete: if true;
+    }
+  }
+}

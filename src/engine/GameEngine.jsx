@@ -1,7 +1,8 @@
 // GameEngine — Core game logic and UI
 // Platform-agnostic game renderer. Content is passed as props.
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { useSession } from "../context/useSession.js";
 
 const LESS_IDEAL_PATTERNS = [
   /betray/i,
@@ -46,7 +47,7 @@ const DEFAULT_SETBACK_STEPS = [
   },
 ];
 
-export default function GameEngine({ content }) {
+export default function GameEngine({ content, gameId, savedState, onExit }) {
   const [currentScene, setCurrentScene] = useState("start");
   const [inventory, setInventory] = useState([]);
   const [score, setScore] = useState(0);
@@ -161,6 +162,76 @@ export default function GameEngine({ content }) {
       }
     }
   }, [resources, gameOver]);
+
+  // --- Classroom save/load ---
+  const session = useSession();
+
+  const serializeGameState = useCallback(() => ({
+    currentScene,
+    inventory,
+    score,
+    valuesScore,
+    decisionLog,
+    playerName,
+    rpgStats,
+    party,
+    gameOver,
+    gameOverReason,
+    resources,
+    awardedScenes: Array.from(awardedScenesRef.current),
+    drainedScenes: Array.from(drainedScenesRef.current),
+    setbackState,
+    battleState,
+  }), [currentScene, inventory, score, valuesScore, decisionLog, playerName,
+       rpgStats, party, gameOver, gameOverReason, resources, setbackState, battleState]);
+
+  const autoSave = useCallback((nextScene) => {
+    if (!session.isInClass || !gameId) return;
+    // Build state snapshot with the upcoming scene (not current — it hasn't been set yet)
+    const state = {
+      ...serializeGameState(),
+      currentScene: nextScene,
+    };
+    session.saveProgress(gameId, state, false, null).catch(() => {});
+  }, [session, gameId, serializeGameState]);
+
+  const saveCompletion = useCallback((finalScore) => {
+    if (!session.isInClass || !gameId) return;
+    const state = serializeGameState();
+    session.saveProgress(gameId, state, true, finalScore).catch(() => {});
+  }, [session, gameId, serializeGameState]);
+
+  // Restore from saved state on mount
+  const restoredRef = useRef(false);
+  useEffect(() => {
+    if (!savedState || restoredRef.current) return;
+    restoredRef.current = true;
+
+    setCurrentScene(savedState.currentScene || "start");
+    setInventory(savedState.inventory || []);
+    setScore(savedState.score || 0);
+    setValuesScore(savedState.valuesScore || 0);
+    setDecisionLog(savedState.decisionLog || []);
+    setPlayerName(savedState.playerName || "");
+    setNameInputValue(savedState.playerName || "");
+    if (savedState.rpgStats) setRpgStats(savedState.rpgStats);
+    if (savedState.party) setParty(savedState.party);
+    if (savedState.gameOver) setGameOver(savedState.gameOver);
+    if (savedState.gameOverReason) setGameOverReason(savedState.gameOverReason);
+    if (savedState.resources) setResources(savedState.resources);
+    if (savedState.awardedScenes) awardedScenesRef.current = new Set(savedState.awardedScenes);
+    if (savedState.drainedScenes) drainedScenesRef.current = new Set(savedState.drainedScenes);
+    if (savedState.setbackState) setSetbackState(savedState.setbackState);
+    if (savedState.battleState) setBattleState(savedState.battleState);
+  }, [savedState]);
+
+  const handleExitToMenu = useCallback(() => {
+    if (session.isInClass && gameId) {
+      const state = serializeGameState();
+      session.saveProgress(gameId, state, false, null).catch(() => {});
+    }
+    if (onExit) onExit();
+  }, [session, gameId, serializeGameState, onExit]);
 
   const hasRequiredItems = (requiredItems = []) =>
     requiredItems.every((itemId) => inventory.includes(itemId));
@@ -868,11 +939,13 @@ export default function GameEngine({ content }) {
     if (resultScreen.endsStory) {
       setResultScreen({ active: false, text: "", nextScene: null, endsStory: false, finalScore: 0 });
       setSummaryState({ visible: true, finalScore: resultScreen.finalScore });
+      saveCompletion(resultScreen.finalScore);
       return;
     }
     const nextScene = resultScreen.nextScene;
     setResultScreen({ active: false, text: "", nextScene: null, endsStory: false, finalScore: 0 });
     setMessage("");
+    autoSave(nextScene);
     setCurrentScene(nextScene);
   };
 
@@ -897,6 +970,7 @@ export default function GameEngine({ content }) {
     });
     setScore((prev) => prev + 5);
     setMessage("You recover from the setback and return to the journey.");
+    autoSave(targetScene);
     setCurrentScene(targetScene);
   };
 
@@ -912,10 +986,14 @@ export default function GameEngine({ content }) {
 
     setMessage(interaction.successText || "");
     setScore((prev) => prev + 10);
+    autoSave(interaction.next);
     setCurrentScene(interaction.next);
   };
 
   const handlePlayAgain = () => {
+    if (session.isInClass && gameId) {
+      session.clearProgress(gameId).catch(() => {});
+    }
     setCurrentScene("start");
     setInventory([]);
     setScore(0);
@@ -1146,6 +1224,9 @@ export default function GameEngine({ content }) {
     return (
       <div style={styles.container}>
         <div style={styles.header}>
+          {onExit && (
+            <button onClick={onExit} style={styles.menuButton}>← Menu</button>
+          )}
           <h1 style={styles.title}>📚 Journey Summary</h1>
           <p style={styles.subtitle}>{metadata.title}</p>
         </div>
@@ -1227,6 +1308,9 @@ export default function GameEngine({ content }) {
   return (
     <div style={styles.container}>
       <div style={styles.header}>
+        {onExit && (
+          <button onClick={handleExitToMenu} style={styles.menuButton}>← Menu</button>
+        )}
         <h1 style={styles.title}>{isRPG ? "🐉 The Dragon's Laire" : "📖 Reader's Quest"}</h1>
         <p style={styles.subtitle}>{metadata.title}</p>
       </div>
@@ -1356,6 +1440,20 @@ const styles = {
     textAlign: "center",
     marginBottom: "clamp(20px, 5vw, 40px)",
     paddingTop: "20px",
+    position: "relative",
+  },
+  menuButton: {
+    position: "absolute",
+    top: "20px",
+    left: "0",
+    padding: "6px 14px",
+    background: "rgba(201, 168, 76, 0.15)",
+    border: "1px solid rgba(201, 168, 76, 0.4)",
+    borderRadius: "6px",
+    color: "#c9a84c",
+    fontSize: "13px",
+    cursor: "pointer",
+    fontFamily: "inherit",
   },
   title: {
     fontSize: "clamp(28px, 7vw, 48px)",
