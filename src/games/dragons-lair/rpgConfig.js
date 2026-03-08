@@ -1,4 +1,13 @@
 export const rpgConfig = {
+  nameScreen: {
+    title: "🐉 The Dragon's Laire",
+    subtitle: "A Medieval RPG Adventure",
+    art: "🛡️",
+    heading: "Create Your Character",
+    narrative: "A wandering knight enters the guild hall — battle-worn, homeless, and haunted by the destruction of Thornwall. Your kingdom was burned to ash by the dragon Lurch. Everything you knew is gone. But a knight without a name is a knight without purpose. What name do you carry?",
+    placeholder: "Enter your knight's name...",
+    buttonText: "Begin Quest →",
+  },
   startingStats: {
     hp: 100,
     maxHp: 100,

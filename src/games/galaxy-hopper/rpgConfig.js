@@ -1,4 +1,13 @@
 export const rpgConfig = {
+  nameScreen: {
+    title: "🚀 Galaxy Hopper",
+    subtitle: "A Space RPG Adventure",
+    art: "👤",
+    heading: "Who Are You?",
+    narrative: "Deep beneath the surface of Lowler Prime, in the dust-choked tunnels of the myrridium mines, there lives a teenager who has never seen real sunlight. A slave of the Nefaridrone Empire since birth, you have spent every waking hour drilling rock and hauling ore. But tonight the electronic lock on your bunkhouse door is flickering. Tonight might be your one chance. But first — what is your name?",
+    placeholder: "Enter your name...",
+    buttonText: "Begin Escape →",
+  },
   startingStats: {
     hp: 80,
     maxHp: 80,

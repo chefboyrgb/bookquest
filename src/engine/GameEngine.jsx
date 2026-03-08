@@ -997,22 +997,19 @@ export default function GameEngine({ content }) {
 
   // === RPG: Name Input Screen ===
   if (isRPG && !playerName) {
+    const ns = content.rpgConfig?.nameScreen || {};
     return (
       <div style={styles.container}>
         <div style={styles.header}>
-          <h1 style={styles.title}>🐉 The Dragon's Laire</h1>
-          <p style={styles.subtitle}>A Medieval RPG Adventure</p>
+          <h1 style={styles.title}>{ns.title || metadata.title}</h1>
+          <p style={styles.subtitle}>{ns.subtitle || "An RPG Adventure"}</p>
         </div>
         <div style={styles.main}>
           <div style={styles.scene}>
-            <div style={styles.art}>🛡️</div>
-            <h3 style={styles.sceneTitle}>Create Your Character</h3>
+            <div style={styles.art}>{ns.art || "🛡️"}</div>
+            <h3 style={styles.sceneTitle}>{ns.heading || "Create Your Character"}</h3>
             <p style={styles.narrative}>
-              A wandering knight enters the guild hall — battle-worn, homeless,
-              and haunted by the destruction of Thornwall. Your kingdom was
-              burned to ash by the dragon Lurch. Everything you knew is gone.
-              But a knight without a name is a knight without purpose. What name
-              do you carry?
+              {ns.narrative || "What name do you carry?"}
             </p>
             <div style={styles.nameInputContainer}>
               <input
@@ -1024,7 +1021,7 @@ export default function GameEngine({ content }) {
                     setPlayerName(nameInputValue.trim());
                   }
                 }}
-                placeholder="Enter your knight's name..."
+                placeholder={ns.placeholder || "Enter your name..."}
                 style={styles.nameInput}
                 maxLength={24}
                 autoFocus
@@ -1041,7 +1038,7 @@ export default function GameEngine({ content }) {
                 }}
                 disabled={!nameInputValue.trim()}
               >
-                Begin Quest →
+                {ns.buttonText || "Begin Quest →"}
               </button>
             </div>
           </div>
