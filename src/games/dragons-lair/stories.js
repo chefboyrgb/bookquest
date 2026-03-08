@@ -7,7 +7,7 @@ export const storyNodes = {
     chapter: "Chapter 1 — The Murkwood Crossing",
     art: "🏛️",
     narrative:
-      "The guild hall reeks of stale ale and old leather. {playerName} pushes through the heavy oak door — a wandering knight with nothing left to lose. The kingdom of Thornwall, your home, was burned to ash by the dragon Lurch. Everything and everyone you knew, gone in a single night of fire. A faded posting on the notice board catches your eye, bearing a royal seal you don't recognize.",
+      "The guild hall smells of old leather and wood smoke. {playerName} pushes through the heavy oak door — a wandering knight with nothing left to lose. The kingdom of Thornwall, your home, was burned to ash by the dragon Lurch. Everything and everyone you knew, gone in a single night of fire. A faded posting on the notice board catches your eye, bearing a royal seal you don't recognize.",
     choices: [
       {
         text: "Read the royal posting",
@@ -15,24 +15,24 @@ export const storyNodes = {
         successText: "The seal belongs to the Kingdom of Laffter Land.",
       },
       {
-        text: "Ask the barkeep what he knows",
+        text: "Ask the guild master what he knows",
         next: "quest_board",
         successText:
-          "The barkeep leans close. 'King Leopold's boy was taken by a dragon. Same beast that torched Thornwall, they say. Big reward for anyone mad enough to go after it.'",
+          "The guild master leans close. 'King Leopold's boy was taken by a dragon. Same beast that torched Thornwall, they say. Big reward for anyone mad enough to go after it.'",
       },
       {
-        text: "Ignore it and order a drink",
+        text: "Ignore it and sit by the fire",
         next: "quest_board",
         isLessIdeal: true,
         successText:
-          "You try to drown your sorrows, but the posting keeps calling to you.",
+          "You try to push the thought away, but the posting keeps calling to you.",
         setbackSteps: [
           {
-            title: "Drowning Sorrows",
+            title: "Lost in Thought",
             chapter: "Detour",
-            art: "🍺",
+            art: "💭",
             narrative:
-              "You sit at the bar nursing your ale, but the memory of Thornwall burning won't fade. The faces of those you couldn't save flash before your eyes. Running from your purpose only makes the pain worse.",
+              "You sit alone by the fire, but the memory of Thornwall burning won't fade. The faces of those you couldn't save flash before your eyes. Running from your purpose only makes the pain worse.",
             choices: [
               { text: "Look at the posting again" },
               { text: "Ask yourself what a true knight would do" },
@@ -44,7 +44,7 @@ export const storyNodes = {
             chapter: "Detour",
             art: "🛡️",
             narrative:
-              "You set down your drink. You didn't survive Thornwall just to waste away in a tavern. The dragon Lurch took everything from you. Maybe it's time to take something back.",
+              "You stand up. You didn't survive Thornwall just to sit here feeling sorry for yourself. The dragon Lurch took everything from you. Maybe it's time to take something back.",
             choices: [
               { text: "Read the posting with clear eyes" },
               { text: "Stand tall and face your destiny" },
@@ -375,14 +375,14 @@ export const storyNodes = {
   },
 
   // ============================================================
-  // SCENE 8: The Boar's Head Tavern
+  // SCENE 8: The Boar's Head Inn
   // ============================================================
   tavern: {
-    title: "The Boar's Head Tavern",
+    title: "The Boar's Head Inn",
     chapter: "Chapter 1 — The Murkwood Crossing",
-    art: "🍺",
+    art: "🍖",
     narrative:
-      "After arming yourself, you stop at the Boar's Head Tavern for a meal before leaving Laffter Land. The place is rowdy — miners, merchants, and off-duty guards fill every bench. At a corner table sits a mountain of a man. His arms are thick as tree trunks, his face a map of old scars. He drinks alone, turning a coin between battered fingers. The barkeep whispers: 'That's Grimjaw. Best fighter in the guild. Mean as a badger, but honest as the day is long. He's been talking about the royal bounty on Prince Elo.'",
+      "After arming yourself, you stop at the Boar's Head Inn for a meal before leaving Laffter Land. The place is rowdy — miners, merchants, and off-duty guards fill every bench. At a corner table sits a mountain of a man. His arms are thick as tree trunks, his face a map of old scars. He sits alone, turning a coin between battered fingers. The innkeeper whispers: 'That's Grimjaw. Best fighter in the guild. Mean as a badger, but honest as the day is long. He's been talking about the royal bounty on Prince Elo.'",
     choices: [
       {
         text: "Offer Grimjaw a share of the king's reward to join you",
@@ -390,7 +390,7 @@ export const storyNodes = {
         recruitMember: "grimjaw",
         bondEffect: { grimjaw: 5 },
         successText:
-          "Grimjaw looks you up and down, takes a long drink, then grins. 'You've got guts showing up at my table. Alright, knight — I'm in. But I get a fair cut of the treasure.' He stands, towering over you, and extends a hand the size of a dinner plate.",
+          "Grimjaw looks you up and down, stares at you for a long moment, then grins. 'You've got guts showing up at my table. Alright, knight — I'm in. But I get a fair cut of the treasure.' He stands, towering over you, and extends a hand the size of a dinner plate.",
       },
       {
         text: "Challenge Grimjaw to arm wrestling to test his mettle",
@@ -480,7 +480,7 @@ export const storyNodes = {
     chapter: "Chapter 1 — The Murkwood Crossing",
     art: "🔮",
     narrative:
-      "Following the lights deeper into the forest, you come upon a desperate scene. A young woman in tattered mage robes stands with her back against a massive oak, staff raised. Three grey wolves circle her, snarling. Her conjured lights are flickering — she's nearly spent her power. Blood runs from a cut on her arm. 'Stay back!' she shouts, uncertain if you're friend or foe.",
+      "Following the lights deeper into the forest, you come upon a desperate scene. A young woman in tattered mage robes stands with her back against a massive oak, staff raised. Three grey wolves circle her, snarling. Her conjured lights are flickering — she's nearly spent her power. A nasty scratch runs across her arm. 'Stay back!' she shouts, uncertain if you're friend or foe.",
     partyNarrative: {
       grimjaw:
         "Grimjaw cracks his knuckles. 'Wolves. I hate wolves. Let's finish this quick.'",
@@ -554,7 +554,7 @@ export const storyNodes = {
       "You find a sheltered spot between two ancient oaks and build a small fire. The warmth feels good after a long day on the road. If you have companions, they settle nearby, and for a while the forest feels less threatening. The crackling fire and the distant hoot of owls create a rare moment of peace on this dangerous quest.",
     partyNarrative: {
       grimjaw:
-        "Grimjaw produces a flask of something strong and takes a long pull. 'Not bad, this questing life. Better than tavern brawling. ...Don't tell anyone I said that.'",
+        "Grimjaw tears off a chunk of dried meat and chews thoughtfully. 'Not bad, this questing life. Better than picking fights at the guild. ...Don't tell anyone I said that.'",
       lyralei:
         "Lyralei traces glowing patterns in the air with her finger, humming softly. 'The ley lines here are strong. This forest has old magic in its roots.'",
     },
@@ -658,10 +658,10 @@ export const storyNodes = {
           enemy: "Silas the Ferryman",
           enemyPower: 35,
           description:
-            "The ferryman's cloak falls away in a single fluid motion, revealing pitch-black leather armor and twin silver daggers that seem to appear from nowhere. His lazy demeanor vanishes, replaced by the cold focus of a master assassin. 'Wrong choice, friend,' he whispers with a smile that doesn't reach his eyes.",
+            "The ferryman's cloak falls away in a single fluid motion, revealing pitch-black leather armor and twin silver daggers that seem to appear from nowhere. His lazy demeanor vanishes, replaced by the cold focus of a master fighter. 'Wrong choice, friend,' he whispers with a smile that doesn't reach his eyes.",
           winNext: "ferryman_defeated",
           winText:
-            "Against all odds, your party overpowers the master assassin. Silas drops to one knee, bleeding. 'Impressive... you're the first to best me in twenty years.'",
+            "Against all odds, your party overpowers the master fighter. Silas drops to one knee, battered. 'Impressive... you're the first to best me in twenty years.'",
           fatal: true,
           fleeNext: "riverbank",
           fleeDifficulty: 10,
@@ -674,7 +674,7 @@ export const storyNodes = {
         next: "ferryman_persuaded",
         requiresCunning: 10,
         failText:
-          "The ferryman sees through your flattery instantly. 'Nice try, lad. I've killed men more silver-tongued than you. Gold. Or. Get. Lost.'",
+          "The ferryman sees through your flattery instantly. 'Nice try, lad. I've bested men more silver-tongued than you. Gold. Or. Get. Lost.'",
         bondEffect: { silas: 5 },
         successText:
           "Something flickers in the ferryman's eyes. You've struck a nerve.",
@@ -713,7 +713,7 @@ export const storyNodes = {
         bondEffect: { silas: 8 },
         moralImpact: 1,
         successText:
-          "Silas pauses, then nods slowly. 'Fair enough. I respect a leader who speaks plainly. You've got yourself an assassin, knight. Use me wisely.' He ferries you across the river in silence.",
+          "Silas pauses, then nods slowly. 'Fair enough. I respect a leader who speaks plainly. You've got yourself a blade for hire, knight. Use me wisely.' He ferries you across the river in silence.",
       },
     ],
   },
@@ -724,9 +724,9 @@ export const storyNodes = {
   ferryman_defeated: {
     title: "The Ferryman Falls",
     chapter: "Chapter 1 — The Murkwood Crossing",
-    art: "💀",
+    art: "⚔️",
     narrative:
-      "Silas kneels on the riverbank, daggers fallen from his hands. Blood seeps from a dozen wounds. He looks up at you with something between respect and disbelief. 'Twenty years... no one's ever beaten me.' He coughs. 'Take the ferry. And this —' he pushes a leather pouch toward you. 'I won't be needing it.' He staggers to his feet, grabs his cloak, and limps into the forest without looking back. You could have had a powerful ally. Instead, you have a wounded enemy somewhere in the trees behind you.",
+      "Silas kneels on the riverbank, daggers fallen from his hands. Bruises and cuts cover his arms. He looks up at you with something between respect and disbelief. 'Twenty years... no one's ever beaten me.' 'Take the ferry. And this —' he pushes a leather pouch toward you. 'I won't be needing it.' He staggers to his feet, grabs his cloak, and limps into the forest without looking back. You could have had a powerful ally. Instead, you have a wounded enemy somewhere in the trees behind you.",
     choices: [
       {
         text: "Take the ferry across and press on",
@@ -961,7 +961,7 @@ export const storyNodes = {
     chapter: "Chapter 1 — The Murkwood Crossing",
     art: "🕳️",
     narrative:
-      "Beyond the bandit ambush, the trail narrows to a rocky ravine. The trees thin out, replaced by mossy stone walls that rise on both sides. Ahead, the path splits. To the left, a gaping cave mouth yawns open — pitch black, with a foul wind breathing out of it like some living thing. Strange scratch marks line the stone around the entrance, and the bones of small animals are scattered near the threshold. To the right, the trail continues along the ridgeline through the forest — longer, but open to what pale light filters through the canopy.",
+      "Beyond the bandit ambush, the trail narrows to a rocky ravine. The trees thin out, replaced by mossy stone walls that rise on both sides. Ahead, the path splits. To the left, a gaping cave mouth yawns open — pitch black, with a foul wind breathing out of it like some living thing. Strange scratch marks line the stone around the entrance, and strange claw marks surround the entrance. To the right, the trail continues along the ridgeline through the forest — longer, but open to what pale light filters through the canopy.",
     partyNarrative: {
       grimjaw:
         "Grimjaw peers into the cave and spits. 'Something lives in there. Something big. I can smell it.'",
@@ -1004,7 +1004,7 @@ export const storyNodes = {
     chapter: "Chapter 1 — The Murkwood Crossing",
     art: "🔥",
     narrative:
-      "Your torch casts dancing shadows on the cave walls as you advance. The passage is wide enough for two abreast, with a ceiling lost in darkness above. Then your torchlight catches something that stops you cold — a massive shape curled against the far wall. A Jabberwocky. The creature is enormous: scaled hide the color of diseased iron, jaws lined with teeth like broken swords, and claws that could shred plate armor like parchment. It stirs at the light, one yellow eye cracking open. But the fire makes it flinch. It hisses — a sound like steam escaping a forge — and retreats deeper into the shadows, unwilling to challenge the flame. You edge past its nest of bones and torn armor, heart hammering, and emerge from the far side of the cave into a silver-lit clearing.",
+      "Your torch casts dancing shadows on the cave walls as you advance. The passage is wide enough for two abreast, with a ceiling lost in darkness above. Then your torchlight catches something that stops you cold — a massive shape curled against the far wall. A Jabberwocky. The creature is enormous: scaled hide the color of diseased iron, jaws lined with enormous teeth, and claws as long as daggers. It stirs at the light, one yellow eye cracking open. But the fire makes it flinch. It hisses — a sound like steam escaping a forge — and retreats deeper into the shadows, unwilling to challenge the flame. You edge past its nest of old armor and debris, heart hammering, and emerge from the far side of the cave into a silver-lit clearing.",
     partyNarrative: {
       grimjaw:
         "Grimjaw whispers through clenched teeth, barely breathing: 'That thing could eat a horse whole. Bless that torch, knight. Bless it.'",
@@ -1028,7 +1028,7 @@ export const storyNodes = {
         next: "clearing",
         rpgEffects: { xp: 5, gold: 25 },
         successText:
-          "Among the bones and rusted armor, you find a pouch of gold coins from some less fortunate traveler. A grim reminder of what happens to those who wander these caves in the dark.",
+          "Among the scattered rubble and rusted armor, you find a pouch of gold coins from some less fortunate traveler. A reminder of what happens to those who wander these caves in the dark.",
       },
     ],
   },
@@ -1041,7 +1041,7 @@ export const storyNodes = {
     chapter: "Chapter 1 — The Murkwood Crossing",
     art: "🐲",
     narrative:
-      "The darkness is absolute. You can't see your hand in front of your face. Water drips somewhere in the distance. Your footsteps echo off unseen walls. Then you hear it — a slow, wet breathing, deep and rhythmic, like bellows in a forge. The stench hits you next: rotting meat and sulfur. Something massive scrapes against stone ahead. Two yellow eyes open in the darkness, each the size of a dinner plate, slitted like a cat's and burning with dim, hungry intelligence. A Jabberwocky. The creature's jaws open with a sound like cracking timber, and a blast of fetid air washes over you. Without light, you never had a chance. The darkness was its domain, and you walked right into it.",
+      "The darkness is absolute. You can't see your hand in front of your face. Water drips somewhere in the distance. Your footsteps echo off unseen walls. Then you hear it — a slow, wet breathing, deep and rhythmic, like bellows in a forge. A terrible smell fills the cave. Something massive scrapes against stone ahead. Two yellow eyes open in the darkness, each the size of a dinner plate, slitted like a cat's and burning with dim, hungry intelligence. A Jabberwocky. The creature's jaws open with a sound like cracking timber, and a blast of foul air washes over you. Without light, you never had a chance. The darkness was its domain, and you walked right into it.",
     partyNarrative: {
       grimjaw:
         "Grimjaw roars a challenge into the dark, but the sound is swallowed by the cave. 'I can't see it! Where is —'",
@@ -1055,19 +1055,19 @@ export const storyNodes = {
         text: "Try to run back toward the entrance",
         rpgEffects: { hp: -999 },
         successText:
-          "You turn to flee, but the Jabberwocky is faster. In the dark, it is king. Its jaws close around you before you take three steps. Your adventure ends here — devoured in the darkness, another set of bones added to the Jabberwocky's nest. Remember: never enter a dark place without a torch.",
+          "You turn to flee, but the Jabberwocky is faster. In the dark, it is king. The creature catches you before you take three steps. Your adventure ends here — lost in the darkness. The Jabberwocky claims another victim. Remember: never enter a dark place without a torch.",
       },
       {
         text: "Draw your weapon and fight blind",
         rpgEffects: { hp: -999 },
         successText:
-          "You swing wildly at the darkness, blade finding nothing but air. The Jabberwocky strikes from a direction you never expected. In absolute darkness, courage alone is not enough. Your quest ends here, in the belly of a beast you never saw. Remember: never enter a dark place without a torch.",
+          "You swing wildly at the darkness, blade finding nothing but air. The Jabberwocky strikes from a direction you never expected. In absolute darkness, courage alone is not enough. Your quest ends here, lost to the creature you never saw. Remember: never enter a dark place without a torch.",
       },
       {
         text: "Stand perfectly still and hope it passes",
         rpgEffects: { hp: -999 },
         successText:
-          "You hold your breath, but the Jabberwocky hunts by smell and sound — your heartbeat thunders like a drum in the silence. It finds you easily. The last thing you hear is the snap of enormous jaws. Remember: never enter a dark place without a torch.",
+          "You hold your breath, but the Jabberwocky hunts by smell and sound — your heartbeat thunders like a drum in the silence. It finds you easily. The creature finds you in the dark. It's over. Remember: never enter a dark place without a torch.",
       },
     ],
   },

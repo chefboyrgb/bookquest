@@ -1050,10 +1050,10 @@ export default function GameEngine({ content }) {
   // === RPG: Game Over Screen ===
   if (isRPG && gameOver) {
     const isResourceDeath = !!gameOverReason;
-    const deathTitle = isResourceDeath ? "☠️ Lost in Space" : "💀 Fallen in Battle";
-    const deathArt = isResourceDeath ? "🌌" : "⚰️";
+    const deathTitle = isResourceDeath ? "☠️ Lost in Space" : "� Quest Failed";
+    const deathArt = isResourceDeath ? "🌌" : "🌑";
     const deathNarrative = gameOverReason
-      || `${playerName}'s wounds prove fatal. The quest ends in darkness, another hero lost to peril. Perhaps another adventurer will succeed where you could not.`;
+      || `${playerName}'s wounds are too great to continue. The quest ends here. Perhaps another adventurer will succeed where you could not.`;
     return (
       <div style={styles.container}>
         <div style={styles.header}>

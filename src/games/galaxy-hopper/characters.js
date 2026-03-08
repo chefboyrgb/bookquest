@@ -1,7 +1,7 @@
 export const characters = {
   player: {
     name: "The Escapee",
-    role: "Runaway Mining Slave",
+    role: "Runaway Mining Kid",
     icon: "🧑‍🚀",
   },
   major_zane: {

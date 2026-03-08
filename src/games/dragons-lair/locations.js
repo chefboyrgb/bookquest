@@ -1,7 +1,7 @@
 export const locations = {
   guild_hall: {
     name: "The Adventurer's Guild",
-    description: "A smoky guild hall in a border town, where drifters and fortune-seekers gather.",
+    description: "A weathered guild hall in a border town, where drifters and fortune-seekers gather.",
   },
   laffterland: {
     name: "Laffter Land",

@@ -96,7 +96,7 @@ export const storyNodes = {
     title: "The Deep Magic",
     chapter: "Chapter 4",
     narrative:
-      "Mrs. Beaver leans close and speaks in hushed tones. 'The Witch has power through the Deep Magic—an ancient law that demands a traitor's blood. If any of you have betrayed her, she can claim your life. Edmund... he has already been to her castle. He accepted her enchanted candy. He may be in her power.' The room falls silent.",
+      "Mrs. Beaver leans close and speaks in hushed tones. 'The Witch has power through the Deep Magic—an ancient law that demands a traitor's life be forfeit. If any of you have betrayed her, she can claim your life. Edmund... he has already been to her castle. He accepted her enchanted candy. He may be in her power.' The room falls silent.",
     choices: [{ text: "Go find Edmund and head to Aslan's camp", next: "quest" }],
     art: "⚖️",
   },
@@ -191,7 +191,7 @@ export const storyNodes = {
     title: "The Deep Magic Revealed",
     chapter: "Chapter 7",
     narrative:
-      "Aslan's eyes grow sad and distant. 'Edmund has betrayed us,' he says solemnly. 'The Deep Magic demands his life. A traitor's blood is required.' The animals gasp. Peter steps forward, 'There must be another way!' Aslan nods slowly. 'There is an older magic, deeper still. But it requires a sacrifice—a willing death in place of a traitor's.' Aslan's gaze falls upon himself, and you understand.",
+      "Aslan's eyes grow sad and distant. 'Edmund has betrayed us,' he says solemnly. 'The Deep Magic demands his life. The traitor's life is forfeit.' The animals gasp. Peter steps forward, 'There must be another way!' Aslan nods slowly. 'There is an older magic, deeper still. But it requires a sacrifice—a willing death in place of a traitor's.' Aslan's gaze falls upon himself, and you understand.",
     choices: [
       { text: "Stay and witness what happens", next: "stone_table" },
     ],
@@ -201,7 +201,7 @@ export const storyNodes = {
     title: "The Stone Table",
     chapter: "Chapter 7",
     narrative:
-      "The Witch and her armies arrive at the ancient Stone Table. She binds Aslan and makes him recite the Deep Magic. Then, in a terrible moment, she raises her knife. You cannot watch, but you hear the silence that follows—louder than any scream. Aslan is gone. Edmund is saved, but at what cost? The Witch laughs with triumph.",
+      "The Witch and her armies arrive at the ancient Stone Table. She binds Aslan and makes him recite the Deep Magic. Then, in a terrible moment, she performs a dark deed. You cannot watch, but you hear the silence that follows—louder than any scream. Aslan is gone. Edmund is saved, but at what cost? The Witch laughs with triumph.",
     itemsGained: ["stone_piece"],
     choices: [
       { text: "Stay hidden until dawn", next: "resurrection" },

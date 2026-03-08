@@ -7,7 +7,7 @@ export const storyNodes = {
     chapter: "Chapter 1 — Escape from Lowler Prime",
     art: "🏚️",
     narrative:
-      "The mining bell clanged twelve hours ago and won't ring again for six more. Bunkhouse 7-G is dark, packed with sleeping miners — men and women with dust in their lungs and chains on their ankles. {playerName} lies awake on a thin mat, staring at the metal ceiling. You've been a slave on Lowler Prime your whole life. Digging myrridium out of the rock for the Nefaridrone Empire. You've never seen the stars except through the clouded dome of the mine shaft. But tonight something is different. The electronic lock on the bunkhouse door is flickering — the power relay must be glitching again. The red light blinks... and goes dark.",
+      "The mining bell clanged twelve hours ago and won't ring again for six more. Bunkhouse 7-G is dark, packed with sleeping miners — men and women with dust in their lungs and tracking bands on their wrists. {playerName} lies awake on a thin mat, staring at the metal ceiling. You've been a captive worker on Lowler Prime your whole life. Digging myrridium out of the rock for the Nefaridrone Empire. You've never seen the stars except through the clouded dome of the mine shaft. But tonight something is different. The electronic lock on the bunkhouse door is flickering — the power relay must be glitching again. The red light blinks... and goes dark.",
     choices: [
       {
         text: "Slip out of bed and test the door",
@@ -411,7 +411,7 @@ export const storyNodes = {
     chapter: "Chapter 1 — Escape from Lowler Prime",
     art: "📻",
     narrative:
-      "You're in open space. The brown marble of Lowler Prime shrinks behind you. Stars surround you in every direction — more than you ever imagined. It's so beautiful you almost forget to breathe. Then the comm system crackles to life. A face appears on the screen — red-faced, bulging veins, absolutely furious. Major Zane. His black uniform is half-buttoned, his hair is wild, and he appears to be standing in his pajamas. 'YOU! You miserable, thieving, mine-crawling little RAT! That is MY ship! MY Galaxy Hopper! Do you have any idea how much that thing COST?! I am going to find you! I am going to chase you across EVERY star system in this quadrant! You hear me?! EVERY! SINGLE! ONE!'",
+      "You're in open space. The brown marble of Lowler Prime shrinks behind you. Stars surround you in every direction — more than you ever imagined. It's so beautiful you almost forget to breathe. Then the comm system crackles to life. A face appears on the screen — red-faced, bulging veins, absolutely furious. Major Zane. His black uniform is half-buttoned, his hair is wild, and he appears to be standing in his pajamas. 'YOU! You sneaky, ship-stealing little PEST! That is MY ship! MY Galaxy Hopper! Do you have any idea how much that thing COST?! I am going to find you! I am going to chase you across EVERY star system in this quadrant! You hear me?! EVERY! SINGLE! ONE!'",
     choices: [
       {
         text: "Say: 'Sorry, Major. Nice ship though!'",
@@ -434,7 +434,7 @@ export const storyNodes = {
         rpgEffects: { xp: 5 },
         moralImpact: 1,
         successText:
-          "Zane goes quiet for one second — genuinely stunned. Then his eye twitches. 'Oh, I will. Mark my words, mining rat. Major Zane does NOT forget and does NOT forgive!' He jabs a finger at the screen. 'This isn't over!' The comm goes dead. No, Major. For you, it's just beginning.",
+          "Zane goes quiet for one second — genuinely stunned. Then his eye twitches. 'Oh, I will. Mark my words, mining pest. Major Zane does NOT forget and does NOT forgive!' He jabs a finger at the screen. 'This isn't over!' The comm goes dead. No, Major. For you, it's just beginning.",
       },
     ],
   },
@@ -447,7 +447,7 @@ export const storyNodes = {
     chapter: "Chapter 1 — Escape from Lowler Prime",
     art: "🗺️",
     narrative:
-      "With Lowler Prime behind you, the Galaxy Hopper's navigation computer lights up with a star map. Thousands of destinations blink across the display. The AI speaks: 'Major, shall I plot a standard patrol route?' It still thinks you're Zane. You've heard whispers in the mine about a place called Icon 7 — a massive space station where the Nefaridrone Empire's grip is weaker. The Creeds run it, a syndicate that cares more about profit than politics. It might be the one place in this quadrant where a runaway mining slave could disappear. The nav computer shows Icon 7 as a yellow blip, three star systems away. At Warp 1, it'll take a while — and burn fuel.",
+      "With Lowler Prime behind you, the Galaxy Hopper's navigation computer lights up with a star map. Thousands of destinations blink across the display. The AI speaks: 'Major, shall I plot a standard patrol route?' It still thinks you're Zane. You've heard whispers in the mine about a place called Icon 7 — a massive space station where the Nefaridrone Empire's grip is weaker. The Creeds run it, a syndicate that cares more about profit than politics. It might be the one place in this quadrant where a runaway mining kid could disappear. The nav computer shows Icon 7 as a yellow blip, three star systems away. At Warp 1, it'll take a while — and burn fuel.",
     resourceDrain: { food: 5 },
     choices: [
       {
@@ -705,10 +705,9 @@ export const storyNodes = {
       {
         text: "Hail the station and ask for guest docking",
         next: "docking",
-        rpgEffects: { xp: 3 },
+        rpgEffects: { xp: 3, gold: -20 },
         successText:
           "You switch off the military transponder and hail as a civilian. 'Single-seat cruiser requesting guest berth.' The controller responds: 'Docking fee: 20 credits. Proceed to Arm C-14.' You pay the fee from Zane's onboard account. Thanks, Major.",
-        rpgEffects: { xp: 3, gold: -20 },
       },
       {
         text: "Just fly in and find an empty dock",
@@ -813,7 +812,7 @@ export const storyNodes = {
         rpgEffects: { xp: 5 },
         statBoost: { cunning: 1 },
         successText:
-          "You ask around carefully. A friendly food vendor tells you: 'The Creeds run the money. The station council handles the rules. And nobody crosses the weapons smugglers on Level 9 unless they want trouble. Stay in the open quadrants — Z quad is safe. Good greenhouse jobs out there.' You file it all away and head for the greenhouse.",
+          "You ask around carefully. A friendly food vendor tells you: 'The Creeds run the money. The station council handles the rules. And nobody crosses the troublemakers on Level 9 unless they want trouble. Stay in the open quadrants — Z quad is safe. Good greenhouse jobs out there.' You file it all away and head for the greenhouse.",
       },
     ],
   },
@@ -927,7 +926,7 @@ export const storyNodes = {
     chapter: "Chapter 1 — Escape from Lowler Prime",
     art: "🌅",
     narrative:
-      "Days pass on Icon 7. You settle into a rhythm at the greenhouse — tending crops, running deliveries, learning the station's twisting corridors. The quasar festival winds down, but the quasar itself still blazes above, painting everything in shifting color. Maren and her husband Dorin are kind. The work is honest. The food is incredible. And Lelania... she's become your best friend. She teaches you about computers and AI. You tell her about the mines, about the escape, about Major Zane's purple face on the comm screen (she nearly falls off her crate laughing). For the first time in your life, you have a home. A real one. But somewhere out there, Major Zane is searching for his ship. The Nefaridrone Empire never forgets a runaway slave. And in the dark spaces between the stars, the Mothgang pirates are on the move. Your adventure is just beginning.",
+      "Days pass on Icon 7. You settle into a rhythm at the greenhouse — tending crops, running deliveries, learning the station's twisting corridors. The quasar festival winds down, but the quasar itself still blazes above, painting everything in shifting color. Maren and her husband Dorin are kind. The work is honest. The food is incredible. And Lelania... she's become your best friend. She teaches you about computers and AI. You tell her about the mines, about the escape, about Major Zane's purple face on the comm screen (she nearly falls off her crate laughing). For the first time in your life, you have a home. A real one. But somewhere out there, Major Zane is searching for his ship. The Nefaridrone Empire never forgets a runaway. And in the dark spaces between the stars, the Mothgang pirates are on the move. Your adventure is just beginning.",
     partyNarrative: {
       lelania:
         "Lelania punches your shoulder. 'Hey. Whatever happens next — we're in this together, okay? I'm not going anywhere.' She grins. 'Well, unless someone tries to take my computer. Then all bets are off.'",
@@ -946,7 +945,7 @@ export const storyNodes = {
         endsStory: true,
         moralImpact: 1,
         successText:
-          "The mining slave from Lowler Prime is gone. In your place stands someone new — someone with a ship, a friend, and a reason to keep fighting. Whatever the galaxy throws at you next, you'll be ready.",
+          "The captive miner from Lowler Prime is gone. In your place stands someone new — someone with a ship, a friend, and a reason to keep fighting. Whatever the galaxy throws at you next, you'll be ready.",
       },
       {
         text: "Check on the Galaxy Hopper — make sure your escape route is ready",

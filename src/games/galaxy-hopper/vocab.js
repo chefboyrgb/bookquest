@@ -1,7 +1,7 @@
 export const vocabulary = {
   nefaridrone: {
     word: "Nefaridrone Empire",
-    definition: "A cruel galactic empire that controls entire star systems through military force and slave labor.",
+    definition: "A cruel galactic empire that controls entire star systems through military force and forced labor.",
   },
   galaxy_hopper: {
     word: "Galaxy Hopper 9000",
@@ -21,11 +21,11 @@ export const vocabulary = {
   },
   mothgang: {
     word: "The Mothgang",
-    definition: "A notorious gang of space pirates led by Drednot Redd. They kidnap people, smuggle goods, and serve as bounty hunters for the empire.",
+    definition: "A notorious gang of space pirates led by Drednot Redd. They capture people, steal cargo, and hunt fugitives for the empire.",
   },
   myrridium: {
     word: "Myrridium",
-    definition: "An extremely rare mineral required to upgrade starship warp drives beyond Warp 5. Heavily smuggled and fiercely guarded.",
+    definition: "An extremely rare mineral required to upgrade starship warp drives beyond Warp 5. Heavily traded and fiercely guarded.",
   },
   quasar: {
     word: "Quasar",

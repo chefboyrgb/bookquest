@@ -5,7 +5,7 @@ export const locations = {
   },
   bunkhouse: {
     name: "Bunkhouse 7-G",
-    description: "A cramped, locked dormitory where mining slaves sleep under guard each night.",
+    description: "A cramped, locked dormitory where mining workers sleep under guard each night.",
   },
   hangar_bay: {
     name: "Hangar Bay 3",

@@ -54,7 +54,7 @@ export const rpgConfig = {
       cunning: 12,
       bond: 0,
       icon: "🗡️",
-      description: "A master assassin disguised as a simple boatman. Dangerous and unpredictable.",
+      description: "A master rogue disguised as a simple boatman. Dangerous and unpredictable.",
     },
   },
   bondDescriptions: {
@@ -62,7 +62,7 @@ export const rpgConfig = {
       stranger: "Walks behind you, hand resting on his weapon.",
       acquaintance: "Grunts approvingly at your decisions.",
       companion: "Cracks jokes about your swordsmanship.",
-      friend: "Tells you about his family over ale.",
+      friend: "Tells you about his family by the campfire.",
       trustedAlly: "Calls you brother.",
     },
     lyralei: {
@@ -73,11 +73,11 @@ export const rpgConfig = {
       trustedAlly: "Trusts you with her most powerful spells.",
     },
     silas: {
-      stranger: "Watches everyone with an assassin's eyes.",
+      stranger: "Watches everyone with a rogue's sharp eyes.",
       acquaintance: "Offers a backhanded compliment about your fighting.",
       companion: "Shares a dark joke and almost smiles.",
       friend: "Reveals a hidden safe route through dangerous ground.",
-      trustedAlly: "Swears a blood oath of loyalty to your cause.",
+      trustedAlly: "Swears an unbreakable oath of loyalty to your cause.",
     },
   },
 };
