@@ -83,9 +83,21 @@ export default function GameEngine({ content }) {
   );
   const [party, setParty] = useState([]);
   const [gameOver, setGameOver] = useState(false);
+  const [gameOverReason, setGameOverReason] = useState("");
   const [battleState, setBattleState] = useState({
     active: false,
     encounter: null,
+  });
+
+  // Resource system (fuel, oxygen, food — context-based drain)
+  const [resources, setResources] = useState(() => {
+    const resCfg = content.rpgConfig?.resources;
+    if (!resCfg) return null;
+    const init = {};
+    for (const [key, cfg] of Object.entries(resCfg)) {
+      init[key] = cfg.start;
+    }
+    return init;
   });
 
   // Unpack content modules
@@ -99,7 +111,56 @@ export default function GameEngine({ content }) {
 
     setInventory((prev) => Array.from(new Set([...prev, ...scene.itemsGained])));
     awardedScenesRef.current.add(currentScene);
+
+    // Auto-refill resources when resource items are gained
+    if (resources && content.rpgConfig?.resourceRefill) {
+      const refillMap = content.rpgConfig.resourceRefill;
+      const resCfg = content.rpgConfig.resources;
+      setResources((prev) => {
+        const updated = { ...prev };
+        for (const itemId of scene.itemsGained) {
+          const refill = refillMap[itemId];
+          if (refill && updated[refill.resource] !== undefined) {
+            const max = resCfg[refill.resource]?.max || 100;
+            updated[refill.resource] = Math.min(max, updated[refill.resource] + refill.amount);
+          }
+        }
+        return updated;
+      });
+    }
   }, [currentScene, scene]);
+
+  // Resource drain when entering a scene with resourceDrain
+  const drainedScenesRef = useRef(new Set());
+  useEffect(() => {
+    if (!resources || !scene?.resourceDrain || gameOver) return;
+    if (drainedScenesRef.current.has(currentScene)) return;
+    drainedScenesRef.current.add(currentScene);
+
+    setResources((prev) => {
+      const updated = { ...prev };
+      for (const [key, amount] of Object.entries(scene.resourceDrain)) {
+        if (updated[key] !== undefined) {
+          updated[key] = Math.max(0, updated[key] - amount);
+        }
+      }
+      return updated;
+    });
+  }, [currentScene, scene, gameOver]);
+
+  // Check for resource depletion → game over
+  useEffect(() => {
+    if (!resources || gameOver) return;
+    const resCfg = content.rpgConfig?.resources;
+    for (const [key, value] of Object.entries(resources)) {
+      if (value <= 0) {
+        const label = resCfg?.[key]?.label || key;
+        setGameOver(true);
+        setGameOverReason(`Your ${label} ran out. The void of space is unforgiving.`);
+        return;
+      }
+    }
+  }, [resources, gameOver]);
 
   const hasRequiredItems = (requiredItems = []) =>
     requiredItems.every((itemId) => inventory.includes(itemId));
@@ -881,7 +942,18 @@ export default function GameEngine({ content }) {
       );
       setParty([]);
       setGameOver(false);
+      setGameOverReason("");
       setBattleState({ active: false, encounter: null });
+      // Reset resources
+      const resCfg = content.rpgConfig?.resources;
+      if (resCfg) {
+        const init = {};
+        for (const [key, cfg] of Object.entries(resCfg)) {
+          init[key] = cfg.start;
+        }
+        setResources(init);
+      }
+      drainedScenesRef.current = new Set();
     }
   };
 
@@ -980,21 +1052,23 @@ export default function GameEngine({ content }) {
 
   // === RPG: Game Over Screen ===
   if (isRPG && gameOver) {
+    const isResourceDeath = !!gameOverReason;
+    const deathTitle = isResourceDeath ? "☠️ Lost in Space" : "💀 Fallen in Battle";
+    const deathArt = isResourceDeath ? "🌌" : "⚰️";
+    const deathNarrative = gameOverReason
+      || `${playerName}'s wounds prove fatal. The quest ends in darkness, another hero lost to peril. Perhaps another adventurer will succeed where you could not.`;
     return (
       <div style={styles.container}>
         <div style={styles.header}>
-          <h1 style={{ ...styles.title, color: "#ef4444" }}>💀 Fallen in Battle</h1>
+          <h1 style={{ ...styles.title, color: "#ef4444" }}>{deathTitle}</h1>
           <p style={styles.subtitle}>{metadata.title}</p>
         </div>
         <div style={styles.main}>
           <div style={styles.scene}>
-            <div style={styles.art}>⚰️</div>
+            <div style={styles.art}>{deathArt}</div>
             <h3 style={styles.sceneTitle}>Your Journey Ends Here</h3>
             <p style={styles.narrative}>
-              {playerName}'s wounds prove fatal. The quest to rescue Prince Elo
-              ends in the darkness, another hero lost to the perils between
-              Laffter Land and the Badlands. Perhaps another knight will succeed
-              where you could not.
+              {deathNarrative}
             </p>
             <div style={styles.buttonRow}>
               <button onClick={handlePlayAgain} style={styles.choiceButton}>
@@ -1243,12 +1317,23 @@ export default function GameEngine({ content }) {
 
           <div style={styles.footer}>
             {isRPG && rpgStats ? (
-              <p>
-                ❤️ {getHealthStatus(rpgStats.hp, rpgStats.maxHp).label} |
-                💰 {rpgStats.gold} gold |
-                ⭐ Lvl {rpgStats.level} ({rpgStats.xp} XP) |
-                ⚔️ {rpgStats.attack} 🛡️ {rpgStats.defense} 🧠 {rpgStats.cunning}
-              </p>
+              <>
+                <p>
+                  ❤️ {getHealthStatus(rpgStats.hp, rpgStats.maxHp).label} |
+                  {content.rpgConfig?.currencyIcon || "💰"} {rpgStats.gold} {content.rpgConfig?.currencyName || "gold"} |
+                  ⭐ Lvl {rpgStats.level} ({rpgStats.xp} XP) |
+                  ⚔️ {rpgStats.attack} 🛡️ {rpgStats.defense} 🧠 {rpgStats.cunning}
+                </p>
+                {resources && content.rpgConfig?.resources && (
+                  <p style={{ marginTop: "4px" }}>
+                    {Object.entries(content.rpgConfig.resources).map(([key, cfg]) => (
+                      <span key={key} style={{ marginRight: "12px" }}>
+                        {cfg.icon} {cfg.label}: {resources[key]}/{cfg.max}
+                      </span>
+                    ))}
+                  </p>
+                )}
+              </>
             ) : (
               <p>
                 Progress: {score} points | Scenes explored: {Math.floor(score / 10) + 1} |

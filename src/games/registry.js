@@ -1,6 +1,7 @@
 import NarniaGame from "./narnia/index.js";
 import DavidGame from "./david/index.js";
 import DragonsLairGame from "./dragons-lair/index.js";
+import GalaxyHopperGame from "./galaxy-hopper/index.js";
 
 const isLocalDevelopment = import.meta.env.DEV;
 
@@ -29,7 +30,12 @@ export const AVAILABLE_GAMES = {
     enabled: true,
     content: DragonsLairGame,
   },
-  // Add more games here in the future:
-  // charlotte: { ... enabled: true },
-  // wrinkle: { ... enabled: false },
+  "galaxy-hopper": {
+    id: "galaxy-hopper",
+    title: "Galaxy Hopper",
+    author: "Reader's Quest Original",
+    emoji: "🚀",
+    enabled: true,
+    content: GalaxyHopperGame,
+  },
 };
