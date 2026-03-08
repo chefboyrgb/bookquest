@@ -165,6 +165,7 @@ export default function GameEngine({ content, gameId, savedState, onExit }) {
 
   // --- Classroom save/load ---
   const session = useSession();
+  console.log("[GameEngine] session state:", { isInClass: session.isInClass, gameId, studentName: session.studentName });
 
   const serializeGameState = useCallback(() => ({
     currentScene,
@@ -186,13 +187,21 @@ export default function GameEngine({ content, gameId, savedState, onExit }) {
        rpgStats, party, gameOver, gameOverReason, resources, setbackState, battleState]);
 
   const autoSave = useCallback((nextScene) => {
-    if (!session.isInClass || !gameId) return;
+    if (!session.isInClass || !gameId) {
+      console.log("[autoSave] skipped — isInClass:", session.isInClass, "gameId:", gameId);
+      return;
+    }
     // Build state snapshot with the upcoming scene (not current — it hasn't been set yet)
     const state = {
       ...serializeGameState(),
       currentScene: nextScene,
     };
-    session.saveProgress(gameId, state, false, null).catch(() => {});
+    console.log("[autoSave] saving scene:", nextScene, "for game:", gameId);
+    session.saveProgress(gameId, state, false, null).then(() => {
+      console.log("[autoSave] success");
+    }).catch((err) => {
+      console.error("[autoSave] FAILED:", err);
+    });
   }, [session, gameId, serializeGameState]);
 
   const saveCompletion = useCallback((finalScore) => {

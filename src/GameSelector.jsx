@@ -136,11 +136,34 @@ export default function GameSelector() {
     );
   }
 
+  // Teacher menu — choose create or access existing
+  if (view === "teacherMenu") {
+    return (
+      <div style={styles.container}>
+        <div style={styles.header}>
+          <h1 style={styles.title}>🎓 Teacher Portal</h1>
+          <p style={styles.subtitle}>Create a new class or access an existing one</p>
+        </div>
+        <div style={{ maxWidth: "460px", margin: "0 auto", display: "flex", flexDirection: "column", gap: "16px" }}>
+          <button onClick={() => setView("createClass")} style={{ ...styles.startButton, width: "100%" }}>
+            ➕ Create a New Class
+          </button>
+          <button onClick={() => setView("teacherDashboard")} style={{ ...styles.startButton, width: "100%" }}>
+            🔑 Access Existing Class (Teacher Code)
+          </button>
+          <button onClick={() => setView("home")} style={{ ...styles.secondaryButton, width: "100%", marginTop: "8px" }}>
+            ← Back
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   // Create Class view
   if (view === "createClass") {
     return (
       <CreateClass
-        onBack={() => setView("home")}
+        onBack={() => setView("teacherMenu")}
         onDone={(result) => {
           setDashboardClass({ id: result.classId, className: result.joinCode, joinCode: result.joinCode, ...result });
           setView("teacherDashboard");
@@ -215,7 +238,7 @@ export default function GameSelector() {
         <div style={styles.header}>
           <div style={styles.headerTop}>
             <div style={styles.headerLeft}>
-              <button onClick={() => setView("createClass")} style={styles.headerButton}>
+              <button onClick={() => setView("teacherMenu")} style={styles.headerButton}>
                 🎓 Teacher
               </button>
             </div>
