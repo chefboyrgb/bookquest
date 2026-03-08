@@ -18,7 +18,7 @@ export const AVAILABLE_GAMES = {
     title: "The Life of David",
     author: "Biblical Text (1 & 2 Samuel)",
     emoji: "⚔️",
-    enabled: true,
+    enabled: import.meta.env.DEV,
     content: DavidGame,
   },
   "dragons-lair": {
